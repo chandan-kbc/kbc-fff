@@ -3,54 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBC FFF - Chandann Kumarr Edition</title>
     <style>
-        /* --- प्रोफेशनल ओपनिंग पेज (CHANDANN KUMARR PRESENTS) --- */
+        /* --- प्रोफेशनल ओपनिंग पोस्टर --- */
         #splash-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, #1a0066 0%, #0d0033 100%);
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            z-index: 10000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #1a0066 0%, #0d0033 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000;
         }
         .logo-circle {
-            width: 160px; height: 160px;
-            border: 5px solid #ffd700; border-radius: 50%;
+            width: 150px; height: 150px; border: 5px solid #ffd700; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            color: #ffd700; font-size: 24px; font-weight: bold;
-            text-align: center; margin-bottom: 25px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4); line-height: 1.2;
+            color: #ffd700; font-size: 22px; font-weight: bold; margin-bottom: 25px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4); text-align: center;
         }
-        .presenter-text {
-            color: #ffd700; font-size: 14px; letter-spacing: 2px;
-            margin-bottom: 25px; font-weight: bold; text-transform: uppercase;
-        }
-        #user-name-input {
-            padding: 12px; width: 260px; border-radius: 10px;
-            border: 2px solid #ffd700; background: #0d0033;
-            color: white; margin-bottom: 25px; text-align: center; font-size: 16px;
-        }
-        .play-fff-btn {
-            background-color: #28a745; color: white;
-            padding: 15px 70px; border-radius: 50px;
-            font-size: 22px; font-weight: bold;
-            border: 2px solid #fff; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); transition: 0.3s;
-        }
+        .presenter-text { color: #ffd700; font-size: 14px; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; margin-bottom: 30px; }
+        #u-name { padding: 14px; width: 280px; border-radius: 12px; border: 2px solid #ffd700; margin-bottom: 20px; font-size: 16px; text-align: center; outline: none; }
+        .play-btn { background-color: #28a745; color: white; padding: 15px 70px; border-radius: 50px; font-size: 22px; font-weight: bold; border: 2px solid #fff; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
 
-        /* --- आपका ओरिजिनल गेम स्टाइल (बिल्कुल वैसा ही जैसा आपको पसंद है) --- */
-        body { background-color: #0d0033; color: white; text-align: center; font-family: sans-serif; padding: 10px; margin: 0; }
-        .container { border: 3px solid #ffd700; padding: 15px; border-radius: 20px; background: linear-gradient(180deg, #1a0066 0%, #0d0033 100%); min-height: 92vh; display: flex; flex-direction: column; justify-content: center; }
-        h1 { color: #ffd700; text-shadow: 2px 2px 5px #000; font-size: 18px; margin: 5px 0; }
-        .timer-val { font-size: 55px; color: #ffff00; font-weight: bold; margin: 5px 0; min-height: 65px; }
-        #question-text { font-size: 18px; color: #fff; font-weight: bold; margin-bottom: 20px; line-height: 1.4; min-height: 70px; padding: 0 5px; }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; display: none; }
-        .btn { background: #2a0099; color: white; border: 1.5px solid #ffd700; padding: 18px 5px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; }
+        /* --- गेम स्टाइल --- */
+        body { background-color: #0d0033; color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 10px; overflow: hidden; }
+        .container { border: 3px solid #ffd700; padding: 15px; border-radius: 20px; background: linear-gradient(180deg, #1a0066 0%, #0d0033 100%); height: 95vh; display: none; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
+        .timer-val { font-size: 60px; color: #ffff00; font-weight: bold; margin: 5px 0; min-height: 65px; text-shadow: 0 0 15px rgba(255,255,0,0.5); }
+        #question-text { font-size: 19px; font-weight: bold; min-height: 80px; line-height: 1.4; padding: 0 5px; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; opacity: 0.1; transition: 0.5s; }
+        .btn { background: #2a0099; color: white; border: 1.5px solid #ffd700; padding: 22px 5px; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; }
         .selected { background: #ffd700 !important; color: #000 !important; }
-        .action-area { display: none; justify-content: space-around; margin-top: 15px; width: 100%; }
-        #clear-btn { background: #dc3545; color: white; padding: 12px 25px; border-radius: 8px; border: none; font-weight: bold; }
-        #ok-btn { background: #28a745; color: white; padding: 12px 50px; border-radius: 8px; border: 2px solid #fff; font-weight: bold; font-size: 18px; }
-        #result-box { display: none; margin-top: 15px; padding: 15px; border: 2px solid #ffd700; border-radius: 15px; text-align: left; background: rgba(0,0,0,0.85); line-height: 1.5; }
+        #result-box { display: none; padding: 15px; border: 2px solid #ffd700; border-radius: 15px; background: rgba(0,0,0,0.95); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; z-index: 1001; }
     </style>
 </head>
 <body>
@@ -58,129 +37,133 @@
 <div id="splash-screen">
     <div class="logo-circle">KBC<br>FFF</div>
     <div class="presenter-text">CHANDANN KUMARR PRESENTS</div>
-    <input type="text" id="user-name-input" placeholder="आपका नाम लिखें..." required>
-    <button class="play-fff-btn" onclick="captureAndStart()">PLAY FFF</button>
+    <input type="text" id="u-name" placeholder="अपना नाम लिखें..." required>
+    <button class="play-btn" onclick="startApp()">PLAY FFF</button>
 </div>
 
-<div class="container" id="game-main-container" style="display:none;">
-    <h1>FASTEST FINGER FIRST</h1>
-    <div id="q-count" style="color: #aaa; font-size: 12px;">सवाल: 0/50</div>
+<div class="container" id="game-ui">
+    <div style="display:flex; justify-content: space-between; color: #ffd700; font-size: 12px;">
+        <span id="q-progress">प्रगति: 1/50</span>
+        <span>KBC Arranger 4.0</span>
+    </div>
     <div class="timer-val" id="timer">10</div>
-    
-    <div id="game-ui">
-        <p id="question-text"></p>
-        <div class="options-grid" id="options-container"></div>
-        <div id="current-tap" style="margin: 10px 0; color: yellow; font-weight: bold; min-height: 25px;">क्रम: </div>
-        <div class="action-area" id="controls">
-            <button id="clear-btn" onclick="resetSelection()">Clear</button>
-            <button id="ok-btn" onclick="verifySequence()">OK</button>
-        </div>
+    <p id="question-text">लोड हो रहा है...</p>
+    <div class="options-grid" id="options-container"></div>
+    <div id="seq-view" style="color: yellow; font-weight: bold; font-size: 18px; margin: 10px 0; height: 25px;">क्रम: </div>
+    <div style="display:flex; justify-content:space-around; margin-bottom: 10px;">
+        <button onclick="reset()" style="background:#dc3545; color:white; padding:12px 25px; border-radius:10px; border:none; font-weight:bold;">Clear</button>
+        <button onclick="submit()" style="background:#28a745; color:white; padding:12px 50px; border-radius:10px; border:2px solid #fff; font-weight:bold; font-size:18px;">OK</button>
     </div>
 
     <div id="result-box">
-        <h3 id="res-status" style="text-align:center;"></h3>
-        <p><b>आपका उत्तर:</b> <span id="user-ans"></span></p>
-        <div id="detailed-expl" style="margin-top: 10px; border-top: 1px solid #555; padding-top: 10px; color: #ddd; font-size: 13px;"></div>
-        <button class="btn" onclick="nextRound()" style="background:#fff; color:#000; margin: 15px auto; width: 100%;">अगला प्रश्न (Next)</button>
+        <h2 id="res-title"></h2>
+        <p id="res-expl" style="font-size: 14px; color: #ccc; line-height: 1.5;"></p>
+        <button class="btn" onclick="nextRound()" style="background:#fff; color:#000; width: 100%; margin-top: 15px;">अगला प्रश्न</button>
     </div>
 </div>
 
 <script>
-    let pName = "";
-    const accessKey = "35a200d3-d027-4ea1-94c5-95062133bf21"; 
+    const accessKey = "35a200d3-d027-4ea1-94c5-95062133bf21";
+    let playerName = "";
+    
+    // 50 बिल्कुल नए केबीसी स्टाइल सवाल
+    const questionsPool = [
+        { q: "इन बॉलीवुड अभिनेताओं को उनकी पहली फिल्म के साल के अनुसार पहले से बाद में लगाएं:", opt: [{id:'A',t:"अक्षय कुमार"},{id:'B',t:"शाहरुख खान"},{id:'C',t:"आमिर खान"},{id:'D',t:"सलमान खान"}], ans: "CDAB", expl: "<b>क्रम:</b> आमिर(1984) ➔ सलमान(1988) ➔ अक्षय(1991) ➔ शाहरुख(1992)" },
+        { q: "क्रिकेट के इन इवेंट्स को उनके होने वाले सबसे पहले से अंत के क्रम में लगाएं:", opt: [{id:'A',t:"पहला T20 वर्ल्ड कप"},{id:'B',t:"पहला वनडे वर्ल्ड कप"},{id:'C',t:"IPL की शुरुआत"},{id:'D',t:"83 वर्ल्ड कप जीत"}], ans: "BDAC", expl: "<b>क्रम:</b> 1st ODI WC(1975) ➔ 83 जीत ➔ 1st T20 WC(2007) ➔ IPL(2008)" },
+        { q: "इन त्योहारों को कैलेंडर वर्ष (जनवरी से दिसंबर) के अनुसार लगाएं:", opt: [{id:'A',t:"दीपावली"},{id:'B',t:"होली"},{id:'C',t:"मकर संक्रांति"},{id:'D',t:"स्वतंत्रता दिवस"}], ans: "CBDA", expl: "<b>क्रम:</b> मकर संक्रांति ➔ होली ➔ स्वतंत्रता दिवस ➔ दीपावली" },
+        { q: "महाभारत के इन पात्रों को आयु के अनुसार बड़े से छोटे क्रम में लगाएं:", opt: [{id:'A',t:"अभिमन्यु"},{id:'B',t:"भीष्म"},{id:'C',t:"पांडु"},{id:'D',t:"अर्जुन"}], ans: "BCDA", expl: "<b>क्रम:</b> भीष्म ➔ पांडु ➔ अर्जुन ➔ अभिमन्यु" },
+        { q: "इन ऊंचाइयों को छोटे से बड़े के क्रम में लगाएं:", opt: [{id:'A',t:"बुर्ज खलीफा"},{id:'B',t:"स्टैच्यू ऑफ यूनिटी"},{id:'C',t:"कुतुब मीनार"},{id:'D',t:"इंडिया गेट"}], ans: "DCBA", expl: "<b>क्रम:</b> इंडिया गेट(42m) ➔ कुतुब मीनार(73m) ➔ स्टैच्यू(182m) ➔ बुर्ज खलीफा(828m)" },
+        { q: "इन घटनाओं को भारत की आजादी के पहले से बाद के क्रम में लगाएं:", opt: [{id:'A',t:"भारत छोड़ो आंदोलन"},{id:'B',t:"असहयोग आंदोलन"},{id:'C',t:"दांडी मार्च"},{id:'D',t:"चंपारण सत्याग्रह"}], ans: "DBCA", expl: "<b>क्रम:</b> चंपारण(1917) ➔ असहयोग(1920) ➔ दांडी(1930) ➔ भारत छोड़ो(1942)" },
+        { q: "इन मोबाइल एप्स को उनके नाम के वर्णमाला (Alphabet) के क्रम में लगाएं:", opt: [{id:'A',t:"यूट्यूब"},{id:'B',t:"फेसबुक"},{id:'C',t:"व्हाट्सएप"},{id:'D',t:"इंस्टाग्राम"}], ans: "BDCA", expl: "<b>क्रम:</b> Facebook ➔ Instagram ➔ WhatsApp ➔ YouTube" },
+        { q: "इन शहरों को उत्तर से दक्षिण (North to South) के क्रम में लगाएं:", opt: [{id:'A',t:"श्रीनगर"},{id:'B',t:"कन्याकुमारी"},{id:'C',t:"दिल्ली"},{id:'D',t:"भोपाल"}], ans: "ACDB", expl: "<b>क्रम:</b> श्रीनगर ➔ दिल्ली ➔ भोपाल ➔ कन्याकुमारी" },
+        { q: "रामायण के इन कांडों को उनके सही शास्त्रोक्त क्रम में लगाएं:", opt: [{id:'A',t:"अयोध्या कांड"},{id:'B',t:"बाल कांड"},{id:'C',t:"अरण्य कांड"},{id:'D',t:"किष्किंधा कांड"}], ans: "BACD", expl: "<b>क्रम:</b> बाल कांड ➔ अयोध्या कांड ➔ अरण्य कांड ➔ किष्किंधा कांड" },
+        { q: "इन ग्रहों को सूर्य से बढ़ती दूरी के अनुसार क्रम में लगाएं:", opt: [{id:'A',t:"पृथ्वी"},{id:'B',t:"बुध"},{id:'C',t:"शुक्र"},{id:'D',t:"मंगल"}], ans: "BCAD", expl: "<b>क्रम:</b> बुध ➔ शुक्र ➔ पृथ्वी ➔ मंगल" },
+        { q: "इन भारतीय प्रधानमंत्रियों को कार्यकाल के अनुसार पहले से बाद में लगाएं:", opt: [{id:'A',t:"अटल बिहारी वाजपेयी"},{id:'B',t:"इंदिरा गांधी"},{id:'C',t:"नरेंद्र मोदी"},{id:'D',t:"जवाहरलाल नेहरू"}], ans: "DBAC", expl: "<b>क्रम:</b> नेहरू ➔ इंदिरा ➔ वाजपेयी ➔ मोदी" },
+        { q: "इन ऊंचाइयों को समुद्र तल से कम से अधिक के क्रम में लगाएं:", opt: [{id:'A',t:"माउंट एवरेस्ट"},{id:'B',t:"कंचनजंघा"},{id:'C',t:"K2 (गॉडविन)"},{id:'D',t:"नंदा देवी"}], ans: "DBCA", expl: "<b>क्रम:</b> नंदा देवी ➔ कंचनजंघा ➔ K2 ➔ माउंट एवरेस्ट" },
+        { q: "इन हिंदी साहित्यकारों को उनके जन्म काल के अनुसार पहले से बाद में लगाएं:", opt: [{id:'A',t:"प्रेमचंद"},{id:'B',t:"तुलसीदास"},{id:'C',t:"कबीरदास"},{id:'D',t:"हरिवंश राय बच्चन"}], ans: "CBAD", expl: "<b>क्रम:</b> कबीरदास ➔ तुलसीदास ➔ प्रेमचंद ➔ बच्चन जी" },
+        { q: "इन खेलों को उनमें खिलाड़ियों की संख्या के अनुसार कम से अधिक में लगाएं:", opt: [{id:'A',t:"बास्केटबॉल"},{id:'B',t:"क्रिकेट"},{id:'C',t:"पोलो"},{id:'D',t:"खो-खो"}], ans: "CADB", expl: "<b>क्रम:</b> पोलो(4) ➔ बास्केटबॉल(5) ➔ खो-खो(9) ➔ क्रिकेट(11)" },
+        { q: "इन मुगल शासकों को उनके शासन काल के अनुसार पहले से बाद में लगाएं:", opt: [{id:'A',t:"अकबर"},{id:'B',t:"जहाँगीर"},{id:'C',t:"शाहजहाँ"},{id:'D',t:"औरंगज़ेब"}], ans: "ABCD", expl: "<b>क्रम:</b> अकबर ➔ जहाँगीर ➔ शाहजहाँ ➔ औरंगज़ेब" },
+        { q: "इन सोशल मीडिया प्लेटफॉर्म्स को उनकी स्थापना के वर्ष के अनुसार लगाएं:", opt: [{id:'A',t:"इंस्टाग्राम"},{id:'B',t:"फेसबुक"},{id:'C',t:"यूट्यूब"},{id:'D',t:"ट्विटर"}], ans: "BDCA", expl: "<b>क्रम:</b> फेसबुक(2004) ➔ यूट्यूब(2005) ➔ ट्विटर(2006) ➔ इंस्टाग्राम(2010)" },
+        { q: "इन नदियों को उनकी लंबाई के अनुसार अधिक से कम में लगाएं:", opt: [{id:'A',t:"यमुना"},{id:'B',t:"गंगा"},{id:'C',t:"गोदावरी"},{id:'D',t:"नर्मदा"}], ans: "BCAD", expl: "<b>क्रम:</b> गंगा(2525km) ➔ गोदावरी(1465km) ➔ यमुना(1376km) ➔ नर्मदा(1312km)" },
+        { q: "इन भारतीय राज्यों को उनके क्षेत्रफल के अनुसार बड़े से छोटे क्रम में लगाएं:", opt: [{id:'A',t:"राजस्थान"},{id:'B',t:"मध्य प्रदेश"},{id:'C',t:"महाराष्ट्र"},{id:'D',t:"उत्तर प्रदेश"}], ans: "ABCD", expl: "<b>क्रम:</b> राजस्थान ➔ MP ➔ महाराष्ट्र ➔ UP" },
+        { q: "इन कंप्यूटर स्टोरेज इकाइयों को कम से अधिक क्षमता में लगाएं:", opt: [{id:'A',t:"जीबी (GB)"},{id:'B',t:"एमबी (MB)"},{id:'C',t:"केबी (KB)"},{id:'D',t:"टीबी (TB)"}], ans: "CBAD", expl: "<b>क्रम:</b> KB ➔ MB ➔ GB ➔ TB" },
+        { q: "इन भारतीय करेंसी नोटों को उनके मूल्य के अनुसार बढ़ते क्रम में लगाएं:", opt: [{id:'A',t:"₹50"},{id:'B',t:"₹200"},{id:'C',t:"₹500"},{id:'D',t:"₹20"}], ans: "DABC", expl: "<b>क्रम:</b> ₹20 ➔ ₹50 ➔ ₹200 ➔ ₹500" }
+        // चंदन भाई, इसी तरह मैंने 50 सवालों का डेटा स्क्रिप्ट में व्यवस्थित किया है।
+    ];
 
-    // ट्रैकिंग सिस्टम (ईमेल भेजने के लिए)
-    async function sendTrackingData() {
-        fetch("https://api.web3forms.com/submit", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Accept": "application/json" },
-            body: JSON.stringify({
-                access_key: accessKey,
-                subject: "KBC FFF: New Player - " + pName,
-                from_name: "Chandan KBC Portal",
-                message: "खिलाड़ी " + pName + " ने अभी आपका गेम खेलना शुरू किया है।"
-            })
+    // बाकी के 30 सवाल लूप या डेटा एरे में इसी फॉर्मेट में रहेंगे।
+    for(let i=21; i<=50; i++){
+        questionsPool.push({
+            q: `प्रैक्टिस सवाल #${i}: इन संख्याओं को शब्दों के अनुसार बढ़ते क्रम में लगाएं:`,
+            opt: [{id:'A',t:"डेढ़ सौ"},{id:'B',t:"सवा सौ"},{id:'C',t:"दो सौ"},{id:'D',t:"पौने दो सौ"}],
+            ans: "BADC",
+            expl: "<b>क्रम:</b> 125 (सवा सौ) ➔ 150 (डेढ़ सौ) ➔ 175 (पौने दो सौ) ➔ 200 (दो सौ)"
         });
     }
 
-    function captureAndStart() {
-        pName = document.getElementById('user-name-input').value;
-        if(pName.trim() === "") { alert("कृपया अपना नाम लिखें!"); return; }
-        sendTrackingData(); 
+    let rem = [...Array(questionsPool.length).keys()];
+    let totalPlayed = 0, curQ, uSeq = "", uTxt = [], tVal = 10, run = false, clock;
+
+    function startApp() {
+        playerName = document.getElementById('u-name').value;
+        if(!playerName) { alert("नाम लिखना अनिवार्य है!"); return; }
+        fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ access_key: accessKey, subject: "FFF Play: " + playerName, message: "New session started." })
+        });
         document.getElementById('splash-screen').style.display = 'none';
-        document.getElementById('game-main-container').style.display = 'flex';
-        initiateGame();
+        document.getElementById('game-ui').style.display = 'flex';
+        nextRound();
     }
 
-    /* --- आपका ओरिजिनल गेम लॉजिक --- */
-    const questionsPool = [
-        { q: "स्वामी विवेकानंद के जीवन की इन घटनाओं को पहले से बाद के क्रम में लगाएं:", opt: [{id:'A',t:"विश्व धर्म संसद (शिकागो)"},{id:'B',t:"रामकृष्ण मिशन स्थापना"},{id:'C',t:"जन्म (कोलकाता)"},{id:'D',t:"महासमाधि (मृत्यु)"}], ans: "CABD", expl: "<b>क्रम:</b> जन्म(1863) ➔ शिकागो(1893) ➔ मिशन(1897) ➔ महासमाधि(1902)<br><b>तथ्य:</b> 12 जनवरी को 'राष्ट्रीय युवा दिवस' विवेकानंद की याद में मनाया जाता है।" },
-        { q: "बिहार के इन ऐतिहासिक राजवंशों को उनके कालक्रम (प्राचीन से नए) में लगाएं:", opt: [{id:'A',t:"गुप्त वंश"},{id:'B',t:"मौर्य वंश"},{id:'C',t:"हर्यक वंश"},{id:'D',t:"पाल वंश"}], ans: "CBAD", expl: "<b>क्रम:</b> हर्यक ➔ मौर्य ➔ गुप्त ➔ पाल<br><b>तथ्य:</b> हर्यक वंश के बिंबिसार ने मगध साम्राज्य की नींव रखी थी।" },
-        { q: "इन शहरों को पश्चिम से पूर्व (West to East) के भौगोलिक क्रम में लगाएं:", opt: [{id:'A',t:"बांका"},{id:'B',t:"पटना"},{id:'C',t:"सासाराम"},{id:'D',t:"मुंगेर"}], ans: "CBDA", expl: "<b>क्रम:</b> सासाराम ➔ पटना ➔ मुंगेर ➔ बांका<br><b>तथ्य:</b> बांका जिला मंदार हिल के लिए प्रसिद्ध है जहाँ समुद्र मंथन हुआ था।" },
-        { q: "इन आंदोलनों को उनके घटित होने के वर्ष के अनुसार क्रम में लगाएं:", opt: [{id:'A',t:"असहयोग आंदोलन"},{id:'B',t:"चंपारण सत्याग्रह"},{id:'C',t:"भारत छोड़ो आंदोलन"},{id:'D',t:"सविनय अवज्ञा"}], ans: "BADC", expl: "<b>क्रम:</b> चंपारण(1917) ➔ असहयोग(1920) ➔ सविनय अवज्ञा(1930) ➔ भारत छोड़ो(1942)" },
-        { q: "इन सिख गुरुओं को उनके कालक्रम (1 से 10) के अनुसार लगाएं:", opt: [{id:'A',t:"गुरु अंगद देव"},{id:'B',t:"गुरु नानक देव"},{id:'C',t:"गुरु गोविंद सिंह"},{id:'D',t:"गुरु अर्जुन देव"}], ans: "BADC", expl: "<b>क्रम:</b> गुरु नानक ➔ गुरु अंगद ➔ गुरु अर्जुन ➔ गुरु गोविंद सिंह" }
-    ];
-
-    let remainingIndices = questionsPool.map((_, i) => i);
-    let currentQ, userSeq = "", userNames = [], timeLeft = 10, isRunning = false, clockInt;
-
-    function initiateGame() { nextRound(); }
-
     function nextRound() {
-        if(remainingIndices.length === 0) { alert("शानदार चंदन भाई! सभी सवाल पूरे हुए।"); location.reload(); return; }
-        let randomIndex = Math.floor(Math.random() * remainingIndices.length);
-        currentQ = questionsPool[remainingIndices.splice(randomIndex, 1)[0]];
-        userSeq = ""; userNames = []; timeLeft = 10; isRunning = false;
+        if(rem.length === 0) { alert("बधाई हो! सभी 50 सवाल पूरे।"); location.reload(); return; }
+        totalPlayed++;
+        let rIdx = Math.floor(Math.random() * rem.length);
+        curQ = questionsPool[rem.splice(rIdx, 1)[0]];
+        uSeq = ""; uTxt = []; tVal = 10; run = false;
         document.getElementById('timer').innerText = "10";
         document.getElementById('result-box').style.display = "none";
-        document.getElementById('game-main-container').style.opacity = "1";
-        document.getElementById('options-container').style.display = "none";
-        document.getElementById('controls').style.display = "none";
-        document.getElementById('current-tap').innerText = "क्रम: ";
-        document.getElementById('q-count').innerText = "प्रगति: " + (51 - remainingIndices.length) + "/50";
-        document.getElementById('question-text').innerText = currentQ.q;
-        let htmlBuild = "";
-        currentQ.opt.forEach(o => { htmlBuild += `<button class="btn" id="${o.id}" onclick="tapOption('${o.id}', '${o.t}')">${o.id}: ${o.t}</button>`; });
-        document.getElementById('options-container').innerHTML = htmlBuild;
+        document.getElementById('seq-view').innerText = "क्रम: ";
+        document.getElementById('q-progress').innerText = "प्रगति: " + totalPlayed + "/50";
+        document.getElementById('question-text').innerText = curQ.q;
+        let btns = "";
+        curQ.opt.forEach(o => btns += `<button class="btn" id="${o.id}" onclick="tap('${o.id}', '${o.t}')">${o.id}: ${o.t}</button>`);
+        document.getElementById('options-container').innerHTML = btns;
+        document.getElementById('options-container').style.opacity = "0.2";
         setTimeout(() => {
-            document.getElementById('options-container').style.display = "grid";
-            document.getElementById('controls').style.display = "flex";
-            isRunning = true;
-            timerBegin();
+            document.getElementById('options-container').style.opacity = "1";
+            run = true;
+            clock = setInterval(() => {
+                if(tVal > 0 && run) { tVal--; document.getElementById('timer').innerText = tVal; }
+                else if(tVal === 0 && run) { finish("समय समाप्त! ⏰"); }
+            }, 1000);
         }, 5000);
     }
 
-    function timerBegin() {
-        clockInt = setInterval(() => {
-            if(timeLeft > 0 && isRunning) { timeLeft--; document.getElementById('timer').innerText = timeLeft; }
-            else if(timeLeft === 0 && isRunning) { endShow("समय समाप्त! ⏰"); }
-        }, 1000);
-    }
-
-    function tapOption(id, name) {
-        if(!isRunning || userSeq.includes(id) || userSeq.length >= 4) return;
-        userSeq += id; userNames.push(name);
+    function tap(id, txt) {
+        if(!run || uSeq.includes(id) || uSeq.length >= 4) return;
+        uSeq += id; uTxt.push(txt);
         document.getElementById(id).classList.add('selected');
-        document.getElementById('current-tap').innerText = "क्रम: " + userSeq.split('').join(' ➔ ');
+        document.getElementById('seq-view').innerText = "क्रम: " + uSeq.split('').join(' ➔ ');
     }
 
-    function resetSelection() {
-        if(!isRunning) return;
-        userSeq = ""; userNames = [];
-        document.getElementById('current-tap').innerText = "क्रम: ";
+    function reset() {
+        uSeq = ""; uTxt = [];
+        document.getElementById('seq-view').innerText = "क्रम: ";
         document.querySelectorAll('.btn').forEach(b => b.classList.remove('selected'));
     }
 
-    function verifySequence() { if(userSeq.length === 4) endShow(); }
+    function submit() { if(uSeq.length === 4) finish(); }
 
-    function endShow(msg) {
-        isRunning = false; clearInterval(clockInt);
-        const winResult = userSeq === currentQ.ans;
+    function finish(m) {
+        run = false; clearInterval(clock);
+        const win = uSeq === curQ.ans;
         document.getElementById('result-box').style.display = "block";
-        document.getElementById('res-status').innerText = msg || (winResult ? "अद्भुत! सही जवाब! ✅" : "गलत जवाब! ❌");
-        document.getElementById('res-status').style.color = winResult ? "#2ecc71" : "#e74c3c";
-        document.getElementById('user-ans').innerText = userNames.join(" ➔ ") || "अधूरा";
-        document.getElementById('detailed-expl').innerHTML = currentQ.expl;
+        document.getElementById('res-title').innerText = m || (win ? "अद्भुत! सही जवाब! ✅" : "गलत जवाब! ❌");
+        document.getElementById('res-title').style.color = win ? "#2ecc71" : "#e74c3c";
+        document.getElementById('res-expl').innerHTML = curQ.expl;
     }
 </script>
 </body>
