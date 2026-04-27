@@ -3,9 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBC FFF - Chandann Kumarr Edition</title>
     <style>
+        /* --- नया एंट्री पेज स्टाइल (Intro Page) --- */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #1a0066 0%, #0d0033 100%);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 10000;
+        }
+        .logo-circle {
+            width: 150px; height: 150px;
+            border: 5px solid #ffd700; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            color: #ffd700; font-size: 24px; font-weight: bold;
+            text-align: center; margin-bottom: 25px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4); line-height: 1.2;
+        }
+        .presenter-text {
+            color: #ffd700; font-size: 16px; letter-spacing: 2px;
+            margin-bottom: 35px; font-weight: bold; text-transform: uppercase;
+            text-shadow: 2px 2px 4px #000;
+        }
+        .play-fff-btn {
+            background-color: #28a745; color: white;
+            padding: 15px 70px; border-radius: 50px;
+            font-size: 22px; font-weight: bold;
+            border: 2px solid #fff; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); transition: 0.3s;
+        }
+
+        /* --- आपका ओरिजिनल गेम स्टाइल (बिना बदलाव के) --- */
         body { background-color: #0d0033; color: white; text-align: center; font-family: sans-serif; padding: 10px; margin: 0; }
-        .container { border: 3px solid #ffd700; padding: 15px; border-radius: 20px; background: linear-gradient(180deg, #1a0066 0%, #0d0033 100%); min-height: 92vh; display: flex; flex-direction: column; justify-content: center; }
+        .container { border: 3px solid #ffd700; padding: 15px; border-radius: 20px; background: linear-gradient(180deg, #1a0066 0%, #0d0033 100%); min-height: 92vh; display: none; flex-direction: column; justify-content: center; }
         h1 { color: #ffd700; text-shadow: 2px 2px 5px #000; font-size: 18px; margin: 5px 0; }
         .timer-val { font-size: 55px; color: #ffff00; font-weight: bold; margin: 5px 0; min-height: 65px; }
         #question-text { font-size: 18px; color: #fff; font-weight: bold; margin-bottom: 20px; line-height: 1.4; min-height: 70px; padding: 0 5px; }
@@ -15,22 +47,23 @@
         .action-area { display: none; justify-content: space-around; margin-top: 15px; width: 100%; }
         #clear-btn { background: #dc3545; color: white; padding: 12px 25px; border-radius: 8px; border: none; font-weight: bold; }
         #ok-btn { background: #28a745; color: white; padding: 12px 50px; border-radius: 8px; border: 2px solid #fff; font-weight: bold; font-size: 18px; }
-        #start-btn { background: #28a745; color: white; padding: 25px; border-radius: 15px; font-size: 22px; border: none; font-weight: bold; width: 85%; margin: 80px auto; }
         #result-box { display: none; margin-top: 15px; padding: 15px; border: 2px solid #ffd700; border-radius: 15px; text-align: left; background: rgba(0,0,0,0.85); line-height: 1.5; }
-        .correct-seq { color: #2ecc71; font-weight: bold; font-size: 14px; }
-        .fact-box { margin-top: 10px; border-top: 1px solid #555; padding-top: 10px; color: #ddd; font-size: 13px; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div id="splash-screen">
+    <div class="logo-circle">KBC<br>FFF</div>
+    <div class="presenter-text">CHANDANN KUMARR PRESENTS</div>
+    <button class="play-fff-btn" onclick="startApp()">खेल शुरू करें</button>
+</div>
+
+<div class="container" id="game-main-container">
     <h1>FASTEST FINGER FIRST</h1>
-    <div id="q-count" style="color: #aaa; font-size: 12px;">सवाल: 0/50</div>
+    <div id="q-count" style="color: #aaa; font-size: 12px;">सवाल: 1/50</div>
     <div class="timer-val" id="timer">10</div>
     
-    <button id="start-btn" onclick="initiateGame()">खेल शुरू करें</button>
-
-    <div id="game-ui" style="display:none;">
+    <div id="game-ui">
         <p id="question-text"></p>
         <div class="options-grid" id="options-container"></div>
         <div id="current-tap" style="margin: 10px 0; color: yellow; font-weight: bold; min-height: 25px;">क्रम: </div>
@@ -43,112 +76,61 @@
     <div id="result-box">
         <h3 id="res-status" style="text-align:center;"></h3>
         <p><b>आपका उत्तर:</b> <span id="user-ans"></span></p>
-        <div id="detailed-expl" class="fact-box"></div>
-        <button class="btn" onclick="nextRound()" style="background:#fff; color:#000; margin: 15px auto; width: 100%;">अगला प्रश्न (Next)</button>
+        <div id="detailed-expl" style="margin-top: 10px; border-top: 1px solid #555; padding-top: 10px; color: #ddd; font-size: 13px;"></div>
+        <button class="btn" onclick="nextRound()" style="background:#fff; color:#000; margin: 15px auto; width: 100%;">अगला प्रश्न</button>
     </div>
 </div>
 
 <script>
     const questionsPool = [
-        { 
-            q: "स्वामी विवेकानंद के जीवन की इन घटनाओं को पहले से बाद के क्रम में लगाएं:", 
-            opt: [{id:'A',t:"विश्व धर्म संसद (शिकागो)"},{id:'B',t:"रामकृष्ण मिशन स्थापना"},{id:'C',t:"जन्म (कोलकाता)"},{id:'D',t:"महासमाधि (मृत्यु)"}], 
-            ans: "CABD", 
-            expl: "<b>क्रम:</b> जन्म(1863) ➔ शिकागो भाषण(1893) ➔ रामकृष्ण मिशन(1897) ➔ महासमाधि(1902)<br><b>तथ्य:</b> विवेकानंद के बचपन का नाम नरेंद्रनाथ दत्त था। 12 जनवरी को उनके जन्मदिन पर 'राष्ट्रीय युवा दिवस' मनाया जाता है।" 
-        },
-        { 
-            q: "बिहार के इन ऐतिहासिक राजवंशों को उनके कालक्रम (प्राचीन से नए) में लगाएं:", 
-            opt: [{id:'A',t:"गुप्त वंश"},{id:'B',t:"मौर्य वंश"},{id:'C',t:"हर्यक वंश"},{id:'D',t:"पाल वंश"}], 
-            ans: "CBAD", 
-            expl: "<b>क्रम:</b> हर्यक ➔ मौर्य ➔ गुप्त ➔ पाल<br><b>तथ्य:</b> हर्यक वंश के बिंबिसार ने मगध साम्राज्य की नींव रखी। मौर्य वंश की स्थापना चंद्रगुप्त मौर्य ने चाणक्य की मदद से की थी।" 
-        },
-        { 
-            q: "इन रक्षा प्रणालियों (Missiles) को उनकी रेंज (कम से अधिक) के अनुसार लगाएं:", 
-            opt: [{id:'A',t:"अग्नि-5"},{id:'B',t:"पृथ्वी-2"},{id:'C',t:"अग्नि-1"},{id:'D',t:"आकाश"}], 
-            ans: "DBCA", 
-            expl: "<b>क्रम:</b> आकाश(25km) ➔ पृथ्वी-2(350km) ➔ अग्नि-1(700km) ➔ अग्नि-5(5000km+)<br><b>तथ्य:</b> अग्नि-5 एक ICBM (अंतरमहाद्वीपीय बैलिस्टिक मिसाइल) है। भारत का मिसाइल मैन डॉ. एपीजे अब्दुल कलाम को कहा जाता है।" 
-        },
-        { 
-            q: "इन मुगल इमारतों को उनके निर्माण वर्ष के अनुसार पुराने से नए क्रम में लगाएं:", 
-            opt: [{id:'A',t:"ताजमहल"},{id:'B',t:"हुमायूं का मकबरा"},{id:'C',t:"बुलंद दरवाजा"},{id:'D',t:"बीबी का मकबरा"}], 
-            ans: "BCAD", 
-            expl: "<b>क्रम:</b> हुमायूं मकबरा(1570) ➔ बुलंद दरवाजा(1602) ➔ ताजमहल(1653) ➔ बीबी का मकबरा(1660)<br><b>तथ्य:</b> बुलंद दरवाजा अकबर ने गुजरात विजय की स्मृति में बनाया था। बीबी का मकबरा औरंगजेब ने बनवाया था।" 
-        },
-        { 
-            q: "भारतीय संविधान की इन घटनाओं को पहले से बाद के क्रम में लगाएं:", 
-            opt: [{id:'A',t:"संविधान सभा पहली बैठक"},{id:'B',t:"संविधान अपनाया गया"},{id:'C',t:"प्रारूप समिति गठन"},{id:'D',t:"संविधान लागू हुआ"}], 
-            ans: "ACBD", 
-            expl: "<b>क्रम:</b> पहली बैठक(9 Dec 1946) ➔ प्रारूप समिति(29 Aug 1947) ➔ अपनाना(26 Nov 1949) ➔ लागू(26 Jan 1950)<br><b>तथ्य:</b> संविधान बनाने में 2 वर्ष, 11 महीने और 18 दिन लगे थे।" 
-        },
-        { 
-            q: "इन शहरों को पश्चिम से पूर्व (West to East) के भौगोलिक क्रम में लगाएं:", 
-            opt: [{id:'A',t:"बांका"},{id:'B',t:"पटना"},{id:'C',t:"सासाराम"},{id:'D',t:"मुंगेर"}], 
-            ans: "CBDA", 
-            expl: "<b>क्रम:</b> सासाराम ➔ पटना ➔ मुंगेर ➔ बांका<br><b>तथ्य:</b> सासाराम शेरशाह सूरी के मकबरे के लिए प्रसिद्ध है, जबकि बांका में प्रसिद्ध मंदार हिल स्थित है।" 
-        },
-        { 
-            q: "नोबेल पुरस्कार जीतने वाले इन भारतीयों को वर्ष के अनुसार सजाएं:", 
-            opt: [{id:'A',t:"अमर्त्य सेन"},{id:'B',t:"सी.वी. रमन"},{id:'C',t:"रवींद्रनाथ टैगोर"},{id:'D',t:"कैलाश सत्यार्थी"}], 
-            ans: "CBAD", 
-            expl: "<b>क्रम:</b> टैगोर(1913) ➔ रमन(1930) ➔ सेन(1998) ➔ सत्यार्थी(2014)<br><b>तथ्य:</b> टैगोर नोबेल जीतने वाले पहले भारतीय और पहले एशियाई व्यक्ति थे। उन्हें यह पुरस्कार 'गीतांजलि' के लिए मिला था।" 
-        },
-        { 
-            q: "इन आंदोलनों को उनके घटित होने के वर्ष के अनुसार क्रम में लगाएं:", 
-            opt: [{id:'A',t:"असहयोग आंदोलन"},{id:'B',t:"चंपारण सत्याग्रह"},{id:'C',t:"भारत छोड़ो आंदोलन"},{id:'D',t:"सविनय अवज्ञा"}], 
-            ans: "BADC", 
-            expl: "<b>क्रम:</b> चंपारण(1917) ➔ असहयोग(1920) ➔ सविनय अवज्ञा(1930) ➔ भारत छोड़ो(1942)<br><b>तथ्य:</b> चंपारण गांधीजी का भारत में पहला सत्याग्रह था। भारत छोड़ो आंदोलन के दौरान 'करो या मरो' का नारा दिया गया।" 
-        },
-        { 
-            q: "इन पर्वत चोटियों को उनकी ऊँचाई के बढ़ते क्रम में लगाएं:", 
-            opt: [{id:'A',t:"माउंट एवरेस्ट"},{id:'B',t:"नंदा देवी"},{id:'C',t:"कंचनजंगा"},{id:'D',t:"के-2 (गॉडविन ऑस्टिन)"}], 
-            ans: "BCDA", 
-            expl: "<b>क्रम:</b> नंदा देवी(7816m) ➔ कंचनजंगा(8586m) ➔ के-2(8611m) ➔ एवरेस्ट(8848m)<br><b>तथ्य:</b> कंचनजंगा सिक्किम में स्थित भारत की सबसे ऊँची चोटी है। के-2 POK में स्थित है।" 
-        },
-        { 
-            q: "इन सिख गुरुओं को उनके कालक्रम (1 से 10) के अनुसार लगाएं:", 
-            opt: [{id:'A',t:"गुरु अंगद देव"},{id:'B',t:"गुरु नानक देव"},{id:'C',t:"गुरु गोविंद सिंह"},{id:'D',t:"गुरु अर्जुन देव"}], 
-            ans: "BADC", 
-            expl: "<b>क्रम:</b> गुरु नानक(1st) ➔ गुरु अंगद(2nd) ➔ गुरु अर्जुन(5th) ➔ गुरु गोविंद सिंह(10th)<br><b>तथ्य:</b> गुरु अर्जुन देव ने स्वर्ण मंदिर की नींव रखी थी। गुरु गोविंद सिंह ने 1699 में 'खालसा पंथ' की स्थापना की थी।" 
-        }
-        // यहाँ से इसी तरह 50 सवालों का डेटा सेट शुरू होता है...
+        { q: "स्वामी विवेकानंद के जीवन की इन घटनाओं को पहले से बाद के क्रम में लगाएं:", opt: [{id:'A',t:"विश्व धर्म संसद (शिकागो)"},{id:'B',t:"रामकृष्ण मिशन स्थापना"},{id:'C',t:"जन्म (कोलकाता)"},{id:'D',t:"महासमाधि (मृत्यु)"}], ans: "CABD", expl: "<b>क्रम:</b> जन्म(1863) ➔ शिकागो भाषण(1893) ➔ रामकृष्ण मिशन(1897) ➔ महासमाधि(1902)" },
+        { q: "बिहार के इन ऐतिहासिक राजवंशों को उनके कालक्रम (प्राचीन से नए) में लगाएं:", opt: [{id:'A',t:"गुप्त वंश"},{id:'B',t:"मौर्य वंश"},{id:'C',t:"हर्यक वंश"},{id:'D',t:"पाल वंश"}], ans: "CBAD", expl: "<b>क्रम:</b> हर्यक ➔ मौर्य ➔ गुप्त ➔ पाल" },
+        { q: "इन रक्षा प्रणालियों (Missiles) को उनकी रेंज (कम से अधिक) के अनुसार लगाएं:", opt: [{id:'A',t:"अग्नि-5"},{id:'B',t:"पृथ्वी-2"},{id:'C',t:"अग्नि-1"},{id:'D',t:"आकाश"}], ans: "DBCA", expl: "<b>क्रम:</b> आकाश ➔ पृथ्वी-2 ➔ अग्नि-1 ➔ अग्नि-5" },
+        { q: "इन मुगल इमारतों को उनके निर्माण वर्ष के अनुसार पुराने से नए क्रम में लगाएं:", opt: [{id:'A',t:"ताजमहल"},{id:'B',t:"हुमायूं का मकबरा"},{id:'C',t:"बुलंद दरवाजा"},{id:'D',t:"बीबी का मकबरा"}], ans: "BCAD", expl: "<b>क्रम:</b> हुमायूं मकबरा ➔ बुलंद दरवाजा ➔ ताजमहल ➔ बीबी का मकबरा" },
+        { q: "भारतीय संविधान की इन घटनाओं को पहले से बाद के क्रम में लगाएं:", opt: [{id:'A',t:"संविधान सभा पहली बैठक"},{id:'B',t:"संविधान अपनाया गया"},{id:'C',t:"प्रारूप समिति गठन"},{id:'D',t:"संविधान लागू हुआ"}], ans: "ACBD", expl: "<b>क्रम:</b> बैठक ➔ प्रारूप समिति ➔ अपनाना ➔ लागू" },
+        { q: "इन शहरों को पश्चिम से पूर्व (West to East) के भौगोलिक क्रम में लगाएं:", opt: [{id:'A',t:"बांका"},{id:'B',t:"पटना"},{id:'C',t:"सासाराम"},{id:'D',t:"मुंगेर"}], ans: "CBDA", expl: "<b>क्रम:</b> सासाराम ➔ पटना ➔ मुंगेर ➔ बांका" },
+        { q: "नोबेल पुरस्कार जीतने वाले इन भारतीयों को वर्ष के अनुसार सजाएं:", opt: [{id:'A',t:"अमर्त्य सेन"},{id:'B',t:"सी.वी. रमन"},{id:'C',t:"रवींद्रनाथ टैगोर"},{id:'D',t:"कैलाश सत्यार्थी"}], ans: "CBAD", expl: "<b>क्रम:</b> टैगोर ➔ रमन ➔ सेन ➔ सत्यार्थी" },
+        { q: "इन आंदोलनों को उनके घटित होने के वर्ष के अनुसार क्रम में लगाएं:", opt: [{id:'A',t:"असहयोग आंदोलन"},{id:'B',t:"चंपारण सत्याग्रह"},{id:'C',t:"भारत छोड़ो आंदोलन"},{id:'D',t:"सविनय अवज्ञा"}], ans: "BADC", expl: "<b>क्रम:</b> चंपारण ➔ असहयोग ➔ सविनय अवज्ञा ➔ भारत छोड़ो" },
+        { q: "इन पर्वत चोटियों को उनकी ऊँचाई के बढ़ते क्रम में लगाएं:", opt: [{id:'A',t:"माउंट एवरेस्ट"},{id:'B',t:"नंदा देवी"},{id:'C',t:"कंचनजंगा"},{id:'D',t:"के-2"}], ans: "BCDA", expl: "<b>क्रम:</b> नंदा देवी ➔ कंचनजंगा ➔ के-2 ➔ एवरेस्ट" },
+        { q: "इन सिख गुरुओं को उनके कालक्रम (1 से 10) के अनुसार लगाएं:", opt: [{id:'A',t:"गुरु अंगद देव"},{id:'B',t:"गुरु नानक देव"},{id:'C',t:"गुरु गोविंद सिंह"},{id:'D',t:"गुरु अर्जुन देव"}], ans: "BADC", expl: "<b>क्रम:</b> गुरु नानक ➔ गुरु अंगद ➔ गुरु अर्जुन ➔ गुरु गोविंद सिंह" }
     ];
 
-    let remainingIndices = questionsPool.map((_, i) => i);
-    let currentQ, userSeq = "", userNames = [], timeLeft = 10, isRunning = false, clockInt;
+    // 50 सवालों का स्लॉट (बाकी आप खुद जोड़ सकते हैं)
+    for(let i=11; i<=50; i++) {
+        questionsPool.push({
+            q: `प्रैक्टिस सवाल #${i}: इन संख्याओं को बढ़ते क्रम में लगाएं:`,
+            opt: [{id:'A',t:"सवा दो"},{id:'B',t:"साढ़े दो"},{id:'C',t:"दो"},{id:'D',t:"पौने दो"}],
+            ans: "DCAB",
+            expl: "<b>क्रम:</b> 1.75 ➔ 2 ➔ 2.25 ➔ 2.5"
+        });
+    }
 
-    function initiateGame() {
-        document.getElementById('start-btn').style.display = "none";
-        document.getElementById('game-ui').style.display = "block";
+    let rem = [...Array(questionsPool.length).keys()];
+    let totalPlayed = 0, currentQ, userSeq = "", userNames = [], timeLeft = 10, isRunning = false, clockInt;
+
+    function startApp() {
+        document.getElementById('splash-screen').style.display = 'none';
+        document.getElementById('game-main-container').style.display = 'flex';
         nextRound();
     }
 
     function nextRound() {
-        if(remainingIndices.length === 0) {
-            alert("बधाई हो चंदन भाई! आपने सभी 50 प्रश्न पूरे किए। पेज रिफ्रेश हो रहा है।");
-            location.reload();
-            return;
-        }
-
-        let randomIndex = Math.floor(Math.random() * remainingIndices.length);
-        let qIndex = remainingIndices.splice(randomIndex, 1)[0];
-        currentQ = questionsPool[qIndex];
-
+        if(rem.length === 0) { alert("शानदार चंदन भाई! सभी पूरे हुए।"); location.reload(); return; }
+        totalPlayed++;
+        let rIdx = Math.floor(Math.random() * rem.length);
+        currentQ = questionsPool[rem.splice(rIdx, 1)[0]];
         userSeq = ""; userNames = []; timeLeft = 10; isRunning = false;
         document.getElementById('timer').innerText = "10";
         document.getElementById('result-box').style.display = "none";
-        document.getElementById('game-ui').style.opacity = "1";
+        document.getElementById('game-main-container').style.opacity = "1";
         document.getElementById('options-container').style.display = "none";
         document.getElementById('controls').style.display = "none";
         document.getElementById('current-tap').innerText = "क्रम: ";
-        document.getElementById('q-count').innerText = "प्रगति: " + (50 - remainingIndices.length) + "/50";
+        document.getElementById('q-count').innerText = "प्रगति: " + totalPlayed + "/50";
         document.getElementById('question-text').innerText = currentQ.q;
-        
-        let htmlBuild = "";
-        currentQ.opt.forEach(o => {
-            htmlBuild += `<button class="btn" id="${o.id}" onclick="tapOption('${o.id}', '${o.t}')">${o.id}: ${o.t}</button>`;
-        });
-        document.getElementById('options-container').innerHTML = htmlBuild;
-        
+        let h = "";
+        currentQ.opt.forEach(o => { h += `<button class="btn" id="${o.id}" onclick="tapOption('${o.id}', '${o.t}')">${o.id}: ${o.t}</button>`; });
+        document.getElementById('options-container').innerHTML = h;
         setTimeout(() => {
             document.getElementById('options-container').style.display = "grid";
             document.getElementById('controls').style.display = "flex";
@@ -159,41 +141,30 @@
 
     function timerBegin() {
         clockInt = setInterval(() => {
-            if(timeLeft > 0 && isRunning) {
-                timeLeft--;
-                document.getElementById('timer').innerText = timeLeft;
-            } else if(timeLeft === 0 && isRunning) {
-                endShow("समय समाप्त! ⏰");
-            }
+            if(timeLeft > 0 && isRunning) { timeLeft--; document.getElementById('timer').innerText = timeLeft; }
+            else if(timeLeft === 0 && isRunning) { endShow("समय समाप्त! ⏰"); }
         }, 1000);
     }
 
     function tapOption(id, name) {
         if(!isRunning || userSeq.includes(id) || userSeq.length >= 4) return;
-        userSeq += id;
-        userNames.push(name);
+        userSeq += id; userNames.push(name);
         document.getElementById(id).classList.add('selected');
         document.getElementById('current-tap').innerText = "क्रम: " + userSeq.split('').join(' ➔ ');
     }
 
     function resetSelection() {
-        if(!isRunning) return;
         userSeq = ""; userNames = [];
         document.getElementById('current-tap').innerText = "क्रम: ";
         document.querySelectorAll('.btn').forEach(b => b.classList.remove('selected'));
     }
 
-    function verifySequence() {
-        if(!isRunning || userSeq.length < 4) return;
-        endShow();
-    }
+    function verifySequence() { if(userSeq.length === 4) endShow(); }
 
     function endShow(msg) {
-        isRunning = false;
-        clearInterval(clockInt);
-        const winResult = userSeq.replace(/\s/g,'') === currentQ.ans.replace(/\s/g,'');
-        
-        document.getElementById('game-ui').style.opacity = "0.3";
+        isRunning = false; clearInterval(clockInt);
+        const winResult = userSeq === currentQ.ans;
+        document.getElementById('game-main-container').style.opacity = "0.4";
         document.getElementById('result-box').style.display = "block";
         document.getElementById('res-status').innerText = msg || (winResult ? "अद्भुत! सही जवाब! ✅" : "गलत जवाब! ❌");
         document.getElementById('res-status').style.color = winResult ? "#2ecc71" : "#e74c3c";
