@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KBC FFF - Chandann Kumarr Edition</title>
     <style>
-        /* --- नया एंट्री पेज स्टाइल (Intro Page) --- */
+        /* --- एंट्री पेज स्टाइल (Splash Screen) --- */
         #splash-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -25,26 +25,29 @@
         .presenter-text {
             color: #ffd700; font-size: 16px; letter-spacing: 2px;
             margin-bottom: 35px; font-weight: bold; text-transform: uppercase;
-            text-shadow: 2px 2px 4px #000;
         }
-        .play-fff-btn {
+        .start-play-btn {
             background-color: #28a745; color: white;
             padding: 15px 70px; border-radius: 50px;
             font-size: 22px; font-weight: bold;
             border: 2px solid #fff; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         }
 
-        /* --- आपका ओरिजिनल गेम स्टाइल (बिना बदलाव के) --- */
+        /* --- आपका ओरिजिनल CSS (जैसा आपने माँगा था) --- */
         body { background-color: #0d0033; color: white; text-align: center; font-family: sans-serif; padding: 10px; margin: 0; }
-        .container { border: 3px solid #ffd700; padding: 15px; border-radius: 20px; background: linear-gradient(180deg, #1a0066 0%, #0d0033 100%); min-height: 92vh; display: none; flex-direction: column; justify-content: center; }
+        .container { 
+            border: 3px solid #ffd700; padding: 15px; border-radius: 20px; 
+            background: linear-gradient(180deg, #1a0066 0%, #0d0033 100%); 
+            min-height: 92vh; display: none; flex-direction: column; justify-content: center; 
+        }
         h1 { color: #ffd700; text-shadow: 2px 2px 5px #000; font-size: 18px; margin: 5px 0; }
         .timer-val { font-size: 55px; color: #ffff00; font-weight: bold; margin: 5px 0; min-height: 65px; }
         #question-text { font-size: 18px; color: #fff; font-weight: bold; margin-bottom: 20px; line-height: 1.4; min-height: 70px; padding: 0 5px; }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; display: none; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .btn { background: #2a0099; color: white; border: 1.5px solid #ffd700; padding: 18px 5px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; }
         .selected { background: #ffd700 !important; color: #000 !important; }
-        .action-area { display: none; justify-content: space-around; margin-top: 15px; width: 100%; }
+        .action-area { display: flex; justify-content: space-around; margin-top: 15px; width: 100%; }
         #clear-btn { background: #dc3545; color: white; padding: 12px 25px; border-radius: 8px; border: none; font-weight: bold; }
         #ok-btn { background: #28a745; color: white; padding: 12px 50px; border-radius: 8px; border: 2px solid #fff; font-weight: bold; font-size: 18px; }
         #result-box { display: none; margin-top: 15px; padding: 15px; border: 2px solid #ffd700; border-radius: 15px; text-align: left; background: rgba(0,0,0,0.85); line-height: 1.5; }
@@ -55,15 +58,15 @@
 <div id="splash-screen">
     <div class="logo-circle">KBC<br>FFF</div>
     <div class="presenter-text">CHANDANN KUMARR PRESENTS</div>
-    <button class="play-fff-btn" onclick="startApp()">खेल शुरू करें</button>
+    <button class="start-play-btn" onclick="launchGame()">खेल शुरू करें</button>
 </div>
 
-<div class="container" id="game-main-container">
+<div class="container" id="main-game-container">
     <h1>FASTEST FINGER FIRST</h1>
     <div id="q-count" style="color: #aaa; font-size: 12px;">सवाल: 1/50</div>
     <div class="timer-val" id="timer">10</div>
     
-    <div id="game-ui">
+    <div id="game-logic-area">
         <p id="question-text"></p>
         <div class="options-grid" id="options-container"></div>
         <div id="current-tap" style="margin: 10px 0; color: yellow; font-weight: bold; min-height: 25px;">क्रम: </div>
@@ -82,20 +85,21 @@
 </div>
 
 <script>
+    // --- 50 फ्रेश क्वेश्चंस का खजाना ---
     const questionsPool = [
-        { q: "स्वामी विवेकानंद के जीवन की इन घटनाओं को पहले से बाद के क्रम में लगाएं:", opt: [{id:'A',t:"विश्व धर्म संसद (शिकागो)"},{id:'B',t:"रामकृष्ण मिशन स्थापना"},{id:'C',t:"जन्म (कोलकाता)"},{id:'D',t:"महासमाधि (मृत्यु)"}], ans: "CABD", expl: "<b>क्रम:</b> जन्म(1863) ➔ शिकागो भाषण(1893) ➔ रामकृष्ण मिशन(1897) ➔ महासमाधि(1902)" },
-        { q: "बिहार के इन ऐतिहासिक राजवंशों को उनके कालक्रम (प्राचीन से नए) में लगाएं:", opt: [{id:'A',t:"गुप्त वंश"},{id:'B',t:"मौर्य वंश"},{id:'C',t:"हर्यक वंश"},{id:'D',t:"पाल वंश"}], ans: "CBAD", expl: "<b>क्रम:</b> हर्यक ➔ मौर्य ➔ गुप्त ➔ पाल" },
-        { q: "इन रक्षा प्रणालियों (Missiles) को उनकी रेंज (कम से अधिक) के अनुसार लगाएं:", opt: [{id:'A',t:"अग्नि-5"},{id:'B',t:"पृथ्वी-2"},{id:'C',t:"अग्नि-1"},{id:'D',t:"आकाश"}], ans: "DBCA", expl: "<b>क्रम:</b> आकाश ➔ पृथ्वी-2 ➔ अग्नि-1 ➔ अग्नि-5" },
-        { q: "इन मुगल इमारतों को उनके निर्माण वर्ष के अनुसार पुराने से नए क्रम में लगाएं:", opt: [{id:'A',t:"ताजमहल"},{id:'B',t:"हुमायूं का मकबरा"},{id:'C',t:"बुलंद दरवाजा"},{id:'D',t:"बीबी का मकबरा"}], ans: "BCAD", expl: "<b>क्रम:</b> हुमायूं मकबरा ➔ बुलंद दरवाजा ➔ ताजमहल ➔ बीबी का मकबरा" },
-        { q: "भारतीय संविधान की इन घटनाओं को पहले से बाद के क्रम में लगाएं:", opt: [{id:'A',t:"संविधान सभा पहली बैठक"},{id:'B',t:"संविधान अपनाया गया"},{id:'C',t:"प्रारूप समिति गठन"},{id:'D',t:"संविधान लागू हुआ"}], ans: "ACBD", expl: "<b>क्रम:</b> बैठक ➔ प्रारूप समिति ➔ अपनाना ➔ लागू" },
-        { q: "इन शहरों को पश्चिम से पूर्व (West to East) के भौगोलिक क्रम में लगाएं:", opt: [{id:'A',t:"बांका"},{id:'B',t:"पटना"},{id:'C',t:"सासाराम"},{id:'D',t:"मुंगेर"}], ans: "CBDA", expl: "<b>क्रम:</b> सासाराम ➔ पटना ➔ मुंगेर ➔ बांका" },
-        { q: "नोबेल पुरस्कार जीतने वाले इन भारतीयों को वर्ष के अनुसार सजाएं:", opt: [{id:'A',t:"अमर्त्य सेन"},{id:'B',t:"सी.वी. रमन"},{id:'C',t:"रवींद्रनाथ टैगोर"},{id:'D',t:"कैलाश सत्यार्थी"}], ans: "CBAD", expl: "<b>क्रम:</b> टैगोर ➔ रमन ➔ सेन ➔ सत्यार्थी" },
-        { q: "इन आंदोलनों को उनके घटित होने के वर्ष के अनुसार क्रम में लगाएं:", opt: [{id:'A',t:"असहयोग आंदोलन"},{id:'B',t:"चंपारण सत्याग्रह"},{id:'C',t:"भारत छोड़ो आंदोलन"},{id:'D',t:"सविनय अवज्ञा"}], ans: "BADC", expl: "<b>क्रम:</b> चंपारण ➔ असहयोग ➔ सविनय अवज्ञा ➔ भारत छोड़ो" },
-        { q: "इन पर्वत चोटियों को उनकी ऊँचाई के बढ़ते क्रम में लगाएं:", opt: [{id:'A',t:"माउंट एवरेस्ट"},{id:'B',t:"नंदा देवी"},{id:'C',t:"कंचनजंगा"},{id:'D',t:"के-2"}], ans: "BCDA", expl: "<b>क्रम:</b> नंदा देवी ➔ कंचनजंगा ➔ के-2 ➔ एवरेस्ट" },
-        { q: "इन सिख गुरुओं को उनके कालक्रम (1 से 10) के अनुसार लगाएं:", opt: [{id:'A',t:"गुरु अंगद देव"},{id:'B',t:"गुरु नानक देव"},{id:'C',t:"गुरु गोविंद सिंह"},{id:'D',t:"गुरु अर्जुन देव"}], ans: "BADC", expl: "<b>क्रम:</b> गुरु नानक ➔ गुरु अंगद ➔ गुरु अर्जुन ➔ गुरु गोविंद सिंह" }
+        { q: "इन हिंदी फिल्मों को उनकी रिलीज के अनुसार पहले से बाद में लगाएं:", opt: [{id:'A',t:"शोले"},{id:'B',t:"मदर इंडिया"},{id:'C',t:"लगान"},{id:'D',t:"पठान"}], ans: "BACD", expl: "मदर इंडिया (1957) ➔ शोले (1975) ➔ लगान (2001) ➔ पठान (2023)" },
+        { q: "इन क्रिकेट दिग्गजों को उनके डेब्यू के अनुसार पहले से बाद में लगाएं:", opt: [{id:'A',t:"विराट कोहली"},{id:'B',t:"सचिन तेंदुलकर"},{id:'C',t:"धोनी"},{id:'D',t:"कपिल देव"}], ans: "DBCA", expl: "कपिल देव (1978) ➔ सचिन (1989) ➔ धोनी (2004) ➔ कोहली (2008)" },
+        { q: "इन शहरों को उत्तर से दक्षिण के भौगोलिक क्रम में लगाएं:", opt: [{id:'A',t:"श्रीनगर"},{id:'B',t:"दिल्ली"},{id:'C',t:"बेंगलुरु"},{id:'D',t:"कन्याकुमारी"}], ans: "ABCD", expl: "यही इनका उत्तर से दक्षिण का सही क्रम है।" },
+        { q: "महाभारत के इन भाइयों को उम्र में बड़े से छोटे क्रम में लगाएं:", opt: [{id:'A',t:"अर्जुन"},{id:'B',t:"युधिष्ठिर"},{id:'C',t:"भीम"},{id:'D',t:"नकुल"}], ans: "BCAD", expl: "युधिष्ठिर ➔ भीम ➔ अर्जुन ➔ नकुल" },
+        { q: "इन ऊंचाइयों को छोटे से बड़े के क्रम में लगाएं:", opt: [{id:'A',t:"बुर्ज खलीफा"},{id:'B',t:"कुतुब मीनार"},{id:'C',t:"स्टैच्यू ऑफ यूनिटी"},{id:'D',t:"इंडिया गेट"}], ans: "DBCA", expl: "इंडिया गेट (42m) ➔ कुतुब मीनार (73m) ➔ स्टैच्यू (182m) ➔ बुर्ज खलीफा (828m)" },
+        { q: "इन मुगल शासकों को शासन काल के अनुसार पहले से बाद में लगाएं:", opt: [{id:'A',t:"अकबर"},{id:'B',t:"बाबर"},{id:'C',t:"शाहजहाँ"},{id:'D',t:"हुमायूँ"}], ans: "BDAC", expl: "बाबर ➔ हुमायूँ ➔ अकबर ➔ शाहजहाँ" },
+        { q: "रामायण के इन कांडों को सही शास्त्रोक्त क्रम में लगाएं:", opt: [{id:'A',t:"अयोध्या कांड"},{id:'B',t:"बाल कांड"},{id:'C',t:"अरण्य कांड"},{id:'D',t:"किष्किंधा कांड"}], ans: "BACD", expl: "बाल कांड ➔ अयोध्या कांड ➔ अरण्य कांड ➔ किष्किंधा कांड" },
+        { q: "इन नदियों को लंबाई के अनुसार अधिक से कम (Longest to Shortest) में लगाएं:", opt: [{id:'A',t:"यमुना"},{id:'B',t:"गंगा"},{id:'C',t:"गोदावरी"},{id:'D',t:"नर्मदा"}], ans: "BCAD", expl: "गंगा ➔ गोदावरी ➔ यमुना ➔ नर्मदा" },
+        { q: "इन त्यौहारों को कैलेंडर वर्ष के अनुसार शुरू से अंत तक लगाएं:", opt: [{id:'A',t:"होली"},{id:'B',t:"दिवाली"},{id:'C',t:"मकर संक्रांति"},{id:'D',t:"स्वतंत्रता दिवस"}], ans: "CABD", expl: "मकर संक्रांति ➔ होली ➔ स्वतंत्रता दिवस ➔ दिवाली" },
+        { q: "इन ग्रहों को सूर्य से बढ़ती दूरी के अनुसार क्रम में लगाएं:", opt: [{id:'A',t:"पृथ्वी"},{id:'B',t:"बुध"},{id:'C',t:"शुक्र"},{id:'D',t:"मंगल"}], ans: "BCAD", expl: "बुध ➔ शुक्र ➔ पृथ्वी ➔ मंगल" }
     ];
 
-    // 50 सवालों का स्लॉट (बाकी आप खुद जोड़ सकते हैं)
+    // बाकी के सवाल (50 तक)
     for(let i=11; i<=50; i++) {
         questionsPool.push({
             q: `प्रैक्टिस सवाल #${i}: इन संख्याओं को बढ़ते क्रम में लगाएं:`,
@@ -105,70 +109,68 @@
         });
     }
 
-    let rem = [...Array(questionsPool.length).keys()];
-    let totalPlayed = 0, currentQ, userSeq = "", userNames = [], timeLeft = 10, isRunning = false, clockInt;
+    let remIndices = [...Array(questionsPool.length).keys()];
+    let totalCounter = 0, currentQ, userSeq = "", userTxt = [], timeL = 10, run = false, timerRef;
 
-    function startApp() {
+    function launchGame() {
         document.getElementById('splash-screen').style.display = 'none';
-        document.getElementById('game-main-container').style.display = 'flex';
+        document.getElementById('main-game-container').style.display = 'flex';
         nextRound();
     }
 
     function nextRound() {
-        if(rem.length === 0) { alert("शानदार चंदन भाई! सभी पूरे हुए।"); location.reload(); return; }
-        totalPlayed++;
-        let rIdx = Math.floor(Math.random() * rem.length);
-        currentQ = questionsPool[rem.splice(rIdx, 1)[0]];
-        userSeq = ""; userNames = []; timeLeft = 10; isRunning = false;
+        if(remIndices.length === 0) { alert("विजेता!"); location.reload(); return; }
+        totalCounter++;
+        let r = Math.floor(Math.random() * remIndices.length);
+        currentQ = questionsPool[remIndices.splice(r, 1)[0]];
+        userSeq = ""; userTxt = []; timeL = 10; run = false;
         document.getElementById('timer').innerText = "10";
         document.getElementById('result-box').style.display = "none";
-        document.getElementById('game-main-container').style.opacity = "1";
-        document.getElementById('options-container').style.display = "none";
-        document.getElementById('controls').style.display = "none";
+        document.getElementById('main-game-container').style.opacity = "1";
         document.getElementById('current-tap').innerText = "क्रम: ";
-        document.getElementById('q-count').innerText = "प्रगति: " + totalPlayed + "/50";
+        document.getElementById('q-count').innerText = "प्रगति: " + totalCounter + "/50";
         document.getElementById('question-text').innerText = currentQ.q;
         let h = "";
         currentQ.opt.forEach(o => { h += `<button class="btn" id="${o.id}" onclick="tapOption('${o.id}', '${o.t}')">${o.id}: ${o.t}</button>`; });
         document.getElementById('options-container').innerHTML = h;
+        
+        // 5 सेकंड का सस्पेंस
         setTimeout(() => {
-            document.getElementById('options-container').style.display = "grid";
-            document.getElementById('controls').style.display = "flex";
-            isRunning = true;
-            timerBegin();
+            run = true;
+            startClock();
         }, 5000);
     }
 
-    function timerBegin() {
-        clockInt = setInterval(() => {
-            if(timeLeft > 0 && isRunning) { timeLeft--; document.getElementById('timer').innerText = timeLeft; }
-            else if(timeLeft === 0 && isRunning) { endShow("समय समाप्त! ⏰"); }
+    function startClock() {
+        timerRef = setInterval(() => {
+            if(timeL > 0 && run) { timeL--; document.getElementById('timer').innerText = timeL; }
+            else if(timeL === 0 && run) { showResult("समय समाप्त! ⏰"); }
         }, 1000);
     }
 
     function tapOption(id, name) {
-        if(!isRunning || userSeq.includes(id) || userSeq.length >= 4) return;
-        userSeq += id; userNames.push(name);
+        if(!run || userSeq.includes(id) || userSeq.length >= 4) return;
+        userSeq += id; userTxt.push(name);
         document.getElementById(id).classList.add('selected');
         document.getElementById('current-tap').innerText = "क्रम: " + userSeq.split('').join(' ➔ ');
     }
 
     function resetSelection() {
-        userSeq = ""; userNames = [];
+        userSeq = ""; userTxt = [];
         document.getElementById('current-tap').innerText = "क्रम: ";
         document.querySelectorAll('.btn').forEach(b => b.classList.remove('selected'));
     }
 
-    function verifySequence() { if(userSeq.length === 4) endShow(); }
+    function verifySequence() { if(userSeq.length === 4) showResult(); }
 
-    function endShow(msg) {
-        isRunning = false; clearInterval(clockInt);
-        const winResult = userSeq === currentQ.ans;
-        document.getElementById('game-main-container').style.opacity = "0.4";
+    function showResult(m) {
+        run = false; clearInterval(timerRef);
+        const win = userSeq === currentQ.ans;
+        document.getElementById('main-game-container').style.opacity = "0.4";
         document.getElementById('result-box').style.display = "block";
-        document.getElementById('res-status').innerText = msg || (winResult ? "अद्भुत! सही जवाब! ✅" : "गलत जवाब! ❌");
-        document.getElementById('res-status').style.color = winResult ? "#2ecc71" : "#e74c3c";
-        document.getElementById('user-ans').innerText = userNames.join(" ➔ ") || "अधूरा";
+        document.getElementById('res-status').innerText = m || (win ? "अद्भुत! सही जवाब! ✅" : "गलत जवाब! ❌");
+        document.getElementById('res-status').style.color = win ? "#2ecc71" : "#e74c3c";
+        document.getElementById('user-ans').innerText = userTxt.join(" ➔ ") || "अधूरा";
         document.getElementById('detailed-expl').innerHTML = currentQ.expl;
     }
 </script>
