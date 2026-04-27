@@ -7,50 +7,35 @@
     <style>
         /* --- एंट्री पेज (Splash Screen) --- */
         #splash-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle, #1a0066 0%, #0d0033 100%);
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000;
         }
         .logo-circle {
-            width: 150px; height: 150px;
-            border: 5px solid #ffd700; border-radius: 50%;
+            width: 150px; height: 150px; border: 5px solid #ffd700; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            color: #ffd700; font-size: 24px; font-weight: bold;
-            text-align: center; margin-bottom: 25px;
+            color: #ffd700; font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 25px;
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.4); line-height: 1.2;
         }
-        .presenter-text {
-            color: #ffd700; font-size: 16px; letter-spacing: 2px;
-            margin-bottom: 35px; font-weight: bold; text-transform: uppercase;
-        }
-        .start-play-btn {
-            background-color: #28a745; color: white;
-            padding: 15px 70px; border-radius: 50px;
-            font-size: 22px; font-weight: bold;
-            border: 2px solid #fff; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        }
+        .presenter-text { color: #ffd700; font-size: 16px; letter-spacing: 2px; margin-bottom: 35px; font-weight: bold; text-transform: uppercase; }
+        .play-btn { background-color: #28a745; color: white; padding: 15px 70px; border-radius: 50px; font-size: 22px; font-weight: bold; border: 2px solid #fff; cursor: pointer; }
 
-        /* --- आपका ओरिजिनल गेम स्टाइल --- */
-        body { background-color: #0d0033; color: white; text-align: center; font-family: sans-serif; padding: 10px; margin: 0; overflow-x: hidden; }
+        /* --- आपका पसंदीदा 2x2 गेम स्टाइल --- */
+        body { background-color: #0d0033; color: white; text-align: center; font-family: sans-serif; padding: 10px; margin: 0; }
         .container { 
             border: 3px solid #ffd700; padding: 15px; border-radius: 20px; 
             background: linear-gradient(180deg, #1a0066 0%, #0d0033 100%); 
             min-height: 94vh; display: none; flex-direction: column; justify-content: center; 
-            position: relative;
         }
         h1 { color: #ffd700; text-shadow: 2px 2px 5px #000; font-size: 18px; margin: 5px 0; }
         .timer-val { font-size: 65px; color: #ffff00; font-weight: bold; margin: 5px 0; min-height: 75px; }
         #question-text { font-size: 20px; color: #fff; font-weight: bold; margin-bottom: 25px; line-height: 1.4; min-height: 80px; padding: 0 10px; }
         
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; visibility: hidden; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; display: none; }
         .btn { background: #2a0099; color: white; border: 1.5px solid #ffd700; padding: 22px 5px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .selected { background: #ffd700 !important; color: #000 !important; }
         
-        .action-area { display: flex; justify-content: space-around; margin-top: 15px; width: 100%; visibility: hidden; }
+        .action-area { display: none; justify-content: space-around; margin-top: 15px; width: 100%; }
         #clear-btn { background: #dc3545; color: white; padding: 12px 30px; border-radius: 10px; border: none; font-weight: bold; }
         #ok-btn { background: #28a745; color: white; padding: 12px 60px; border-radius: 10px; border: 2px solid #fff; font-weight: bold; font-size: 18px; }
         
@@ -63,7 +48,7 @@
 <div id="splash-screen">
     <div class="logo-circle">KBC<br>FFF</div>
     <div class="presenter-text">CHANDANN KUMARR PRESENTS</div>
-    <button class="start-play-btn" onclick="launchGame()">खेल शुरू करें</button>
+    <button class="play-btn" onclick="startApp()">खेल शुरू करें</button>
 </div>
 
 <div class="container" id="main-container">
@@ -76,14 +61,14 @@
         <div class="options-grid" id="options-container"></div>
         <div id="current-tap" style="margin: 10px 0; color: yellow; font-weight: bold; min-height: 25px;">क्रम: </div>
         <div class="action-area" id="controls">
-            <button id="clear-btn" onclick="reset()">Clear</button>
-            <button id="ok-btn" onclick="submit()">OK</button>
+            <button id="clear-btn" onclick="clearSelection()">Clear</button>
+            <button id="ok-btn" onclick="verify()">OK</button>
         </div>
     </div>
 
     <div id="result-box">
         <h3 id="res-status" style="text-align:center;"></h3>
-        <p id="detailed-expl"></p>
+        <div id="detailed-expl"></div>
         <button class="btn" onclick="nextRound()" style="background:#fff; color:#000; width: 100%; margin-top: 15px;">अगला प्रश्न</button>
     </div>
 </div>
@@ -100,61 +85,58 @@
         { q: "इन मोबाइल कंपनियों को स्थापना वर्ष के अनुसार पहले से बाद में लगाएं:", opt: [{id:'A',t:"नोकिया"},{id:'B',t:"सैमसंग"},{id:'C',t:"एप्पल"},{id:'D',t:"शाओमी"}], ans: "ABCD", expl: "नोकिया(1865) ➔ सैमसंग(1938) ➔ एप्पल(1976) ➔ शाओमी(2010)" },
         { q: "महाभारत के इन भाइयों को उम्र में बड़े से छोटे क्रम में लगाएं:", opt: [{id:'A',t:"अर्जुन"},{id:'B',t:"युधिष्ठिर"},{id:'C',t:"भीम"},{id:'D',t:"नकुल"}], ans: "BCAD", expl: "युधिष्ठिर ➔ भीम ➔ अर्जुन ➔ नकुल" },
         { q: "इन शहरों को उत्तर से दक्षिण के भौगोलिक क्रम में लगाएं:", opt: [{id:'A',t:"श्रीनगर"},{id:'B',t:"दिल्ली"},{id:'C',t:"बेंगलुरु"},{id:'D',t:"कन्याकुमारी"}], ans: "ABCD", expl: "यही इनका उत्तर से दक्षिण का सही भौगोलिक क्रम है।" }
-        // ... चंदन भाई, इसी तरह 50 सवालों का खजाना नीचे है
     ];
 
-    // बाकी 40 सवाल
     for(let i=11; i<=50; i++) {
         questions.push({
-            q: `सवाल ${i}: इन संख्याओं को बढ़ते क्रम में लगाएं:`,
+            q: "सवाल " + i + ": इन संख्याओं को बढ़ते क्रम में लगाएं:",
             opt: [{id:'A',t:"सवा दो"},{id:'B',t:"साढ़े दो"},{id:'C',t:"दो"},{id:'D',t:"पौने दो"}],
             ans: "DCAB",
-            expl: "<b>क्रम:</b> 1.75 ➔ 2 ➔ 2.25 ➔ 2.5"
+            expl: "<b>सही क्रम:</b> 1.75 ➔ 2 ➔ 2.25 ➔ 2.5"
         });
     }
 
-    let rem = [...Array(questions.length).keys()];
-    let totalP = 0, curQ, seq = "", tVal = 10, run = false, timer;
+    let pool = [...Array(questions.length).keys()];
+    let played = 0, currentQ, seq = "", timeLeft = 10, run = false, timer;
 
-    function launchGame() {
+    function startApp() {
         document.getElementById('splash-screen').style.display = 'none';
         document.getElementById('main-container').style.display = 'flex';
         nextRound();
     }
 
     function nextRound() {
-        if(rem.length === 0) { alert("विजेता! 50 सवाल पूरे।"); location.reload(); return; }
-        totalP++;
-        let r = Math.floor(Math.random() * rem.length);
-        curQ = questions[rem.splice(r, 1)[0]];
-        seq = ""; tVal = 10; run = false;
+        if(pool.length === 0) { alert("विजेता! 50 सवाल पूरे।"); location.reload(); return; }
+        played++;
+        let r = Math.floor(Math.random() * pool.length);
+        currentQ = questions[pool.splice(r, 1)[0]];
+        seq = ""; timeLeft = 10; run = false;
         
-        // UI Reset
         document.getElementById('timer').innerText = "10";
         document.getElementById('result-box').style.display = "none";
-        document.getElementById('options-container').style.visibility = "hidden";
-        document.getElementById('controls').style.visibility = "hidden";
+        document.getElementById('options-container').style.display = "none";
+        document.getElementById('controls').style.display = "none";
         document.getElementById('current-tap').innerText = "क्रम: ";
-        document.getElementById('q-progress').innerText = "प्रगति: " + totalP + "/50";
-        document.getElementById('question-text').innerText = curQ.q;
+        document.getElementById('q-progress').innerText = "प्रगति: " + played + "/50";
+        document.getElementById('question-text').innerText = currentQ.q;
         
         let h = "";
-        curQ.opt.forEach(o => { h += `<button class="btn" id="${o.id}" onclick="tap('${o.id}')">${o.id}: ${o.t}</button>`; });
+        currentQ.opt.forEach(o => { h += `<button class="btn" id="${o.id}" onclick="tap('${o.id}')">${o.id}: ${o.t}</button>`; });
         document.getElementById('options-container').innerHTML = h;
 
-        // 5 सेकंड का सस्पेंस
+        // 5 सेकंड का सस्पेंस (Timer 10 पर रुका रहेगा)
         setTimeout(() => {
-            document.getElementById('options-container').style.visibility = "visible";
-            document.getElementById('controls').style.visibility = "visible";
+            document.getElementById('options-container').style.display = "grid";
+            document.getElementById('controls').style.display = "flex";
             run = true;
-            clock();
+            startClock();
         }, 5000);
     }
 
-    function clock() {
+    function startClock() {
         timer = setInterval(() => {
-            if(tVal > 0 && run) { tVal--; document.getElementById('timer').innerText = tVal; }
-            else if(tVal === 0 && run) { showResult("समय समाप्त! ⏰"); }
+            if(timeLeft > 0 && run) { timeLeft--; document.getElementById('timer').innerText = timeLeft; }
+            else if(timeLeft === 0 && run) { finish("समय समाप्त! ⏰"); }
         }, 1000);
     }
 
@@ -165,21 +147,21 @@
         document.getElementById('current-tap').innerText = "क्रम: " + seq.split('').join(' ➔ ');
     }
 
-    function reset() {
+    function clearSelection() {
         seq = "";
         document.getElementById('current-tap').innerText = "क्रम: ";
         document.querySelectorAll('.btn').forEach(b => b.classList.remove('selected'));
     }
 
-    function submit() { if(seq.length === 4) showResult(); }
+    function verify() { if(seq.length === 4) finish(); }
 
-    function showResult(m) {
+    function finish(msg) {
         run = false; clearInterval(timer);
-        const win = seq === curQ.ans;
+        const win = seq === currentQ.ans;
         document.getElementById('result-box').style.display = "block";
-        document.getElementById('res-status').innerText = m || (win ? "अद्भुत! सही जवाब! ✅" : "गलत जवाब! ❌");
+        document.getElementById('res-status').innerText = msg || (win ? "अद्भुत! सही जवाब! ✅" : "गलत जवाब! ❌");
         document.getElementById('res-status').style.color = win ? "#2ecc71" : "#e74c3c";
-        document.getElementById('detailed-expl').innerHTML = `<b>सही क्रम:</b> ${curQ.expl}`;
+        document.getElementById('detailed-expl').innerHTML = `<b>सही उत्तर:</b> ${currentQ.expl}`;
     }
 </script>
 </body>
