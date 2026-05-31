@@ -5,105 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { background-color: #0d0033; color: white; text-align: center; font-family: sans-serif; padding: 10px; margin: 0; }
-        .box { border: 3px solid gold; padding: 15px; border-radius: 20px; background: linear-gradient(180deg, #1a0066, #0d0033); min-height: 90vh; display: flex; flex-direction: column; justify-content: center; }
-        h2 { color: gold; text-shadow: 2px 2px 4px black; font-size: 20px; }
-        .timer { font-size: 60px; color: yellow; font-weight: bold; margin: 10px 0; }
-        .btn { display: block; width: 100%; margin: 10px 0; padding: 15px; background: #2a0099; color: white; border: 1.5px solid gold; border-radius: 50px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .selected { background: gold !important; color: black !important; }
-        #result-area { display: none; margin-top: 15px; padding: 15px; border-top: 2px dashed gold; text-align: left; }
-        .res-text { font-size: 14px; margin: 8px 0; line-height: 1.4; }
-        .correct { color: #2ecc71; font-weight: bold; }
-        .refresh-btn { background: white; color: black; padding: 12px; border-radius: 8px; border: none; font-weight: bold; margin-top: 10px; width: 100%; font-size: 16px; }
+        .container { border: 3px solid #ffd700; padding: 15px; border-radius: 20px; background: linear-gradient(180deg, #1a0066 0%, #0d0033 100%); min-height: 90vh; display: flex; flex-direction: column; position: relative; }
+        h1 { color: #ffd700; text-shadow: 2px 2px 5px #000; font-size: 20px; }
+        .timer-val { font-size: 55px; color: #ffff00; font-weight: bold; margin: 5px 0; }
+        #question-text { font-size: 19px; color: #fff; font-weight: bold; margin-bottom: 15px; line-height: 1.4; }
+        .btn { display: block; width: 100%; margin: 10px 0; padding: 16px; background: #2a0099; color: white; border: 1.5px solid #ffd700; border-radius: 50px; font-size: 17px; font-weight: bold; }
+        .selected { background: #ffd700 !important; color: #000 !important; }
+        
+        /* सबमिट (OK) और क्लियर बटन */
+        .action-area { display: flex; justify-content: space-between; margin-top: 20px; padding: 0 10px; }
+        #clear-btn { background: #dc3545; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; }
+        #ok-btn { background: #28a745; color: white; border: 2px solid #fff; padding: 12px 40px; border-radius: 10px; font-weight: bold; font-size: 18px; box-shadow: 0 0 10px #28a745; }
+        
+        #start-btn { background: #28a745; color: white; padding: 20px; border-radius: 15px; font-size: 22px; border: none; font-weight: bold; width: 80%; margin: 100px auto; }
+        #result-box { display: none; margin-top: 15px; padding: 15px; border: 2px solid #ffd700; border-radius: 15px; text-align: left; background: rgba(0,0,0,0.6); }
+        .correct-seq { color: #2ecc71; font-weight: bold; }
     </style>
 </head>
-<body onload="nextQuestion()">
+<body>
 
-<div class="box">
-    <h2>KBC FFF - 10 SEC CHALLENGE</h2>
-    <div class="timer" id="timer">10</div>
+<div class="container">
+    <h1>FASTEST FINGER FIRST</h1>
+    <div class="timer-val" id="timer">10</div>
     
-    <div id="game-ui">
-        <p id="question-text" style="font-size: 16px; color: #ddd; font-weight: bold; margin-bottom: 10px;"></p>
-        <div id="options-box"></div>
-        <div id="current-tap" style="margin-top: 10px; color: cyan; font-size: 14px;">क्रम: </div>
+    <button id="start-btn" onclick="startSequence()">खेल शुरू करें</button>
+
+    <div id="game-ui" style="display:none;">
+        <p id="question-text"></p>
+        
+        <div id="options-container" style="visibility: hidden;"></div>
+        
+        <div id="current-tap" style="margin-top: 15px; color: cyan; font-weight: bold; min-height: 25px;">क्रम: </div>
+        
+        <div class="action-area" id="controls" style="visibility: hidden;">
+            <button id="clear-btn" onclick="clearAns()">Clear</button>
+            <button id="ok-btn" onclick="submitAns()">OK</button>
+        </div>
     </div>
 
-    <div id="result-area">
-        <h3 id="status-title" style="text-align:center; font-size: 22px; margin: 5px 0;"></h3>
-        <div class="res-text"><b>आपका चुनाव:</b> <br><span id="user-sequence"></span></div>
-        <div class="res-text"><b>सही क्रम:</b> <br><span class="correct" id="correct-sequence"></span></div>
-        <button class="refresh-btn" onclick="location.reload()">अगला सवाल (Next)</button>
+    <div id="result-box">
+        <h3 id="res-status" style="text-align:center;"></h3>
+        <p><b>आपका उत्तर:</b> <span id="user-ans"></span></p>
+        <p><b>सही उत्तर:</b> <br><span id="correct-ans" class="correct-seq"></span></p>
+        <button class="btn" onclick="location.reload()" style="background:#fff; color:#000;">अगला प्रश्न (Next)</button>
     </div>
 </div>
 
 <script>
-    // यहाँ आप 1000 सवाल तक जोड़ सकते हैं
-    const allQuestions = [
-        { q: "इन युद्धों को पुराने से नए क्रम में लगाएं:", options: [{id:'A',t:"बक्सर (1764)"},{id:'B',t:"हल्दीघाटी (1576)"},{id:'C',t:"प्लासी (1757)"},{id:'D',t:"पानीपत-1 (1526)"}], ans: "DBCA", names: ["पानीपत-1","हल्दीघाटी","प्लासी","बक्सर"] },
-        { q: "इन त्योहारों को साल में आने वाले क्रम में लगाएं:", options: [{id:'A',t:"दीपावली"},{id:'B',t:"होली"},{id:'C',t:"रक्षाबंधन"},{id:'D',t:"गणेश चतुर्थी"}], ans: "BCDA", names: ["होली","रक्षाबंधन","गणेश चतुर्थी","दीपावली"] },
-        { q: "इन ग्रहों को सूर्य से दूरी के क्रम में लगाएं (नजदीक से दूर):", options: [{id:'A',t:"मंगल"},{id:'B',t:"बुध"},{id:'C',t:"पृथ्वी"},{id:'D',t:"शुक्र"}], ans: "BDCA", names: ["बुध","शुक्र","पृथ्वी","मंगल"] },
-        { q: "इन प्रधानमंत्रियों को उनके कार्यकाल के अनुसार सजाएं:", options: [{id:'A',t:"अटल बिहारी वाजपेयी"},{id:'B',t:"जवाहरलाल नेहरू"},{id:'C',t:"इन्दिरा गांधी"},{id:'D',t:"लाल बहादुर शास्त्री"}], ans: "BDCA", names: ["नेहरू","शास्त्री","इन्दिरा गांधी","वाजपेयी"] },
-        { q: "रामायण के इन कांडों को सही क्रम में लगाएं:", options: [{id:'A',t:"अयोध्या कांड"},{id:'B',t:"बाल कांड"},{id:'C',t:"किष्किंधा कांड"},{id:'D',t:"अरण्य कांड"}], ans: "BADC", names: ["बाल कांड","अयोध्या कांड","अरण्य कांड","किष्किंधा कांड"] },
-        { q: "इन महाद्वीपों को क्षेत्रफल के अनुसार बड़े से छोटे क्रम में लगाएं:", options: [{id:'A',t:"यूरोप"},{id:'B',t:"एशिया"},{id:'C',t:"अफ़्रीका"},{id:'D',t:"ऑस्ट्रेलिया"}], ans: "BCAD", names: ["एशिया","अफ़्रीका","यूरोप","ऑस्ट्रेलिया"] },
-        { q: "इन सोशल मीडिया ऐप्स को उनकी शुरुआत के क्रम में लगाएं:", options: [{id:'A',t:"Instagram"},{id:'B',t:"Facebook"},{id:'C',t:"WhatsApp"},{id:'D',t:"Twitter"}], ans: "BDCA", names: ["Facebook","Twitter","WhatsApp","Instagram"] },
-        { q: "भारत के इन राज्यों को उत्तर से दक्षिण के क्रम में लगाएं:", options: [{id:'A',t:"केरल"},{id:'B',t:"हिमाचल प्रदेश"},{id:'C',t:"महाराष्ट्र"},{id:'D',t:"मध्य प्रदेश"}], ans: "BDCA", names: ["हिमाचल","मध्य प्रदेश","महाराष्ट्र","केरल"] },
-        { q: "इन मुगल शासकों को उनके शासन के क्रम में लगाएं:", options: [{id:'A',t:"अकबर"},{id:'B',t:"बाबर"},{id:'C',t:"हुमायूं"},{id:'D',t:"जहांगीर"}], ans: "BCA D", names: ["बाबर","हुमायूं","अकबर","जहांगीर"] },
-        { q: "इन संख्याओं को बढ़ते क्रम (Ascending) में लगाएं:", options: [{id:'A',t:"पाव (1/4)"},{id:'B',t:"आधा (1/2)"},{id:'C',t:"सवा (1.25)"},{id:'D',t:"एक (1.0)"}], ans: "ABDC", names: ["पाव","आधा","एक","सवा"] },
-        { q: "महाभारत के इन पर्वों को क्रम में लगाएं:", options: [{id:'A',t:"वन पर्व"},{id:'B',t:"आदि पर्व"},{id:'C',t:"सभा पर्व"},{id:'D',t:"भीष्म पर्व"}], ans: "BCAD", names: ["आदि पर्व","सभा पर्व","वन पर्व","भीष्म पर्व"] },
-        { q: "इन क्रिकेट विश्व कप विजेताओं को समय के क्रम में लगाएं:", options: [{id:'A',t:"इंग्लैंड"},{id:'B',t:"वेस्टइंडीज"},{id:'C',t:"भारत"},{id:'D',t:"ऑस्ट्रेलिया"}], ans: "BCDA", names: ["वेस्टइंडीज","भारत","ऑस्ट्रेलिया","इंग्लैंड"] },
-        { q: "इन फिल्मी अभिनेताओं को उनकी उम्र (बड़े से छोटे) के क्रम में लगाएं:", options: [{id:'A',t:"ऋतिक रोशन"},{id:'B',t:"अमिताभ बच्चन"},{id:'C',t:"शाहरुख खान"},{id:'D',t:"रणबीर कपूर"}], ans: "BCA D", names: ["अमिताभ","शाहरुख","ऋतिक","रणबीर"] },
-        { q: "इन नोटों को उनके मूल्य के अनुसार छोटे से बड़े क्रम में लगाएं:", options: [{id:'A',t:"₹500"},{id:'B',t:"₹10"},{id:'C',t:"₹200"},{id:'D',t:"₹50"}], ans: "BDCA", names: ["₹10","₹50","₹200","₹500"] },
-        { q: "इन नदियों को लंबाई के अनुसार बड़े से छोटे क्रम में लगाएं:", options: [{id:'A',t:"यमुना"},{id:'B',t:"गंगा"},{id:'C',t:"गोदावरी"},{id:'D',t:"नर्मदा"}], ans: "BCAD", names: ["गंगा","गोदावरी","नर्मदा","यमुना"] }
+    const questions = [
+        { q: "इन हिंदी फिल्मों को रिलीज वर्ष के अनुसार पुराने से नए क्रम में लगाएं:", opt: [{id:'A',t:"दंगल"},{id:'B',t:"शोले"},{id:'C',t:"लगान"},{id:'D',t:"मुगल-ए-आजम"}], ans: "DCBA", expl: ["मुगल-ए-आजम", "शोले", "लगान", "दंगल"] },
+        { q: "शरीर के इन अंगों को ऊपर से नीचे के क्रम में सजाएं:", opt: [{id:'A',t:"घुटने"},{id:'B',t:"माथा"},{id:'C',t:"गर्दन"},{id:'D',t:"नाभि"}], ans: "BCDA", expl: ["माथा", "गर्दन", "नाभि", "घुटने"] },
+        { q: "इन शहरों को पश्चिम से पूर्व के क्रम में लगाएं:", opt: [{id:'A',t:"अहमदाबाद"},{id:'B',t:"जयपुर"},{id:'C',t:"लखनऊ"},{id:'D',t:"पटना"}], ans: "ABCD", expl: ["अहमदाबाद", "जयपुर", "लखनऊ", "पटना"] },
+        { q: "इन क्रिकेटरों को उनके डेब्यू के अनुसार पहले से बाद में लगाएं:", opt: [{id:'A',t:"विराट कोहली"},{id:'B',t:"सचिन तेंदुलकर"},{id:'C',t:"कपिल देव"},{id:'D',t:"सुनील गावस्कर"}], ans: "DCBA", expl: ["गावस्कर", "कपिल देव", "सचिन", "विराट"] },
+        { q: "इन त्यौहारों को हिंदू कैलेंडर के अनुसार साल की शुरुआत से क्रम में लगाएं:", opt: [{id:'A',t:"रक्षाबंधन"},{id:'B',t:"होली"},{id:'C',t:"दिवाली"},{id:'D',t:"दशहरा"}], ans: "BADC", expl: ["होली", "रक्षाबंधन", "दशहरा", "दिवाली"] },
+        { q: "इन ऐतिहासिक हस्तियों को पुराने से नए क्रम में लगाएं:", opt: [{id:'A',t:"गांधीजी"},{id:'B',t:"बुद्ध"},{id:'C',t:"अकबर"},{id:'D',t:"शिवाजी"}], ans: "BCDA", expl: ["बुद्ध", "अकबर", "शिवाजी", "गांधीजी"] },
+        { q: "इन कंप्यूटर इकाइयों को छोटे से बड़े आकार में लगाएं:", opt: [{id:'A',t:"GB"},{id:'B',t:"KB"},{id:'C',t:"MB"},{id:'D',t:"TB"}], ans: "BCAD", expl: ["KB", "MB", "GB", "TB"] },
+        { q: "इन प्रधानमंत्रियों को कार्यकाल के अनुसार पहले से बाद में लगाएं:", opt: [{id:'A',t:"मोदी"},{id:'B',t:"मनमोहन"},{id:'C',t:"वाजपेयी"},{id:'D',t:"नरसिम्हा राव"}], ans: "DCBA", expl: ["नरसिम्हा राव", "वाजपेयी", "मनमोहन", "मोदी"] },
+        { q: "इन ग्रहों को सूर्य से बढ़ती दूरी के क्रम में लगाएं:", opt: [{id:'A',t:"मंगल"},{id:'B',t:"बुध"},{id:'C',t:"पृथ्वी"},{id:'D',t:"शुक्र"}], ans: "BDCA", expl: ["बुध", "शुक्र", "पृथ्वी", "मंगल"] },
+        { q: "इन नोटों को उनकी चौड़ाई के बढ़ते क्रम में लगाएं:", opt: [{id:'A',t:"₹2000"},{id:'B',t:"₹10"},{id:'C',t:"₹500"},{id:'D',t:"₹100"}], ans: "BDCA", expl: ["₹10", "₹100", "₹500", "₹2000"] },
+        { q: "इन महाद्वीपों को क्षेत्रफल के अनुसार बड़े से छोटे क्रम में लगाएं:", opt: [{id:'A',t:"यूरोप"},{id:'B',t:"एशिया"},{id:'C',t:"अफ़्रीका"},{id:'D',t:"ऑस्ट्रेलिया"}], ans: "BCAD", expl: ["एशिया", "अफ़्रीका", "यूरोप", "ऑस्ट्रेलिया"] },
+        { q: "इन नदियों को लंबाई के अनुसार छोटे से बड़े क्रम में लगाएं:", opt: [{id:'A',t:"गंगा"},{id:'B',t:"यमुना"},{id:'C',t:"नर्मदा"},{id:'D',t:"गोदावरी"}], ans: "CDBA", expl: ["नर्मदा", "यमुना", "गोदावरी", "गंगा"] },
+        { q: "बिहार के जिलों को पश्चिम से पूर्व के क्रम में लगाएं:", opt: [{id:'A',t:"कैमूर"},{id:'B',t:"रोहतास"},{id:'C',t:"पटना"},{id:'D',t:"बांका"}], ans: "ABCD", expl: ["कैमूर", "रोहतास", "पटना", "बांका"] },
+        { q: "इन अंतरिक्ष अभियानों को लॉन्च वर्ष के अनुसार लगाएं:", opt: [{id:'A',t:"चंद्रयान-1"},{id:'B',t:"मंगलयान"},{id:'C',t:"चंद्रयान-3"},{id:'D',t:"आदित्य-L1"}], ans: "ABCD", expl: ["चंद्रयान-1", "मंगलयान", "चंद्रयान-3", "आदित्य-L1"] },
+        { q: "तिरंगे के रंगों को नीचे से ऊपर के क्रम में लगाएं:", opt: [{id:'A',t:"सफेद"},{id:'B',t:"हरा"},{id:'C',t:"चक्र"},{id:'D',t:"केसरिया"}], ans: "BCAD", expl: ["हरा", "चक्र", "सफेद", "केसरिया"] }
     ];
 
-    let currentQ;
-    let userChoices = [];
-    let userNames = [];
-    let timeLeft = 10; // यहाँ 10 सेकंड सेट है
-    let isLive = true;
+    let currentQ, userSeq = "", userNames = [], timeLeft = 10, active = false, clock;
 
-    function nextQuestion() {
-        currentQ = allQuestions[Math.floor(Math.random() * allQuestions.length)];
+    function startSequence() {
+        document.getElementById('start-btn').style.display = "none";
+        document.getElementById('game-ui').style.display = "block";
+        
+        currentQ = questions[Math.floor(Math.random() * questions.length)];
         document.getElementById('question-text').innerText = currentQ.q;
+        
         let html = "";
-        currentQ.options.forEach(o => {
+        currentQ.opt.forEach(o => {
             html += `<button class="btn" id="${o.id}" onclick="tap('${o.id}', '${o.t}')">${o.id}: ${o.t}</button>`;
         });
-        document.getElementById('options-box').innerHTML = html;
+        document.getElementById('options-container').innerHTML = html;
+        
+        // 5 सेकंड का सस्पेंस
+        setTimeout(() => {
+            if(document.getElementById('result-box').style.display === "block") return;
+            document.getElementById('options-container').style.visibility = "visible";
+            document.getElementById('controls').style.visibility = "visible";
+            startTimer();
+        }, 5000);
     }
 
-    let clock = setInterval(() => {
-        if(timeLeft > 0 && isLive) {
-            timeLeft--;
-            document.getElementById('timer').innerText = timeLeft;
-        } else if(timeLeft === 0 && isLive) {
-            finish("समय समाप्त! ⏰");
-        }
-    }, 1000);
+    function startTimer() {
+        active = true;
+        clock = setInterval(() => {
+            if(timeLeft > 0 && active) {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft;
+            } else if(timeLeft === 0 && active) {
+                finish("समय समाप्त! ⏰");
+            }
+        }, 1000);
+    }
 
     function tap(id, name) {
-        if(!isLive || userChoices.includes(id)) return;
-        userChoices.push(id);
+        if(!active || userSeq.includes(id) || userSeq.length >= 4) return;
+        userSeq += id;
         userNames.push(name);
         document.getElementById(id).classList.add('selected');
-        document.getElementById('current-tap').innerText = "क्रम: " + userChoices.join(' ➔ ');
-        if(userChoices.length === 4) {
-            isLive = false;
-            clearInterval(clock);
-            if(userChoices.join('') === currentQ.ans.replace(/\s/g,'')) finish("अद्भुत! सही जवाब! ✅");
-            else finish("गलत जवाब! ❌");
-        }
+        document.getElementById('current-tap').innerText = "क्रम: " + userSeq.split('').join(' ➔ ');
     }
 
-    function finish(msg) {
-        isLive = false;
+    function clearAns() {
+        if(!active) return;
+        userSeq = "";
+        userNames = [];
+        document.getElementById('current-tap').innerText = "क्रम: ";
+        let buttons = document.querySelectorAll('.btn');
+        buttons.forEach(b => b.classList.remove('selected'));
+    }
+
+    function submitAns() {
+        if(!active) return;
+        if(userSeq.length < 4) {
+            alert("कृपया चारों विकल्पों को चुनें!");
+            return;
+        }
+        finish();
+    }
+
+    function finish(timeMsg) {
+        active = false;
         clearInterval(clock);
-        document.getElementById('game-ui').style.display = "none";
-        document.getElementById('result-area').style.display = "block";
-        document.getElementById('status-title').innerText = msg;
-        document.getElementById('status-title').style.color = msg.includes("सही") ? "#2ecc71" : "#e74c3c";
-        document.getElementById('user-sequence').innerText = userNames.join(" ➔ ");
-        document.getElementById('correct-sequence').innerText = currentQ.names.join(" ➔ ");
+        
+        const isCorrect = userSeq === currentQ.ans.replace(/\s/g,'');
+        document.getElementById('game-ui').style.opacity = "0.5";
+        document.getElementById('result-box').style.display = "block";
+        document.getElementById('res-status').innerText = timeMsg || (isCorrect ? "अद्भुत! सही जवाब! ✅" : "गलत जवाब! ❌");
+        document.getElementById('res-status').style.color = isCorrect ? "#2ecc71" : "#e74c3c";
+        document.getElementById('user-ans').innerText = userNames.join(" ➔ ") || "अधूरा";
+        document.getElementById('correct-ans').innerText = currentQ.expl.join(" ➔ ");
     }
 </script>
 </body>
